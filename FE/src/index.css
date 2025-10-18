@@ -1,0 +1,65 @@
+.custom-button {
+  background-color: #fff;
+  border-color: #333;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.custom-button:hover {
+  background-color: #ccc;
+}
+
+/* Product Card Styles */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 10px;
+  overflow: hidden;
+  border: none;
+}
+
+.product-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Image Hover Effect */
+.product-image-container {
+  overflow: hidden;
+}
+
+.product-image {
+  transition: transform 0.3s ease-in-out;
+  width: 100%;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+/* Sale Badge */
+.sale-badge {
+  background: red;
+  color: white;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Add to Cart Button */
+.add-to-cart {
+  border: 2px solid #28a745;
+  color: #28a745;
+  background: transparent;
+  padding: 8px 15px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.add-to-cart:hover {
+  background: #28a745;
+  color: white;
+  transform: scale(1.05);
+}
