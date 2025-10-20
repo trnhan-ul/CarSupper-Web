@@ -1,20 +1,20 @@
-## Final Project SDN302 – Clothing Store (FE + BE)
+## Final Project SDN302 – Car Supper (FE + BE)
 
-Kho lưu trữ này gồm Frontend (React) và Backend (Node.js/Express) cho ứng dụng cửa hàng quần áo. Tài liệu này hướng dẫn thiết lập môi trường, cách chạy local, và danh sách file/thư mục cần copy để chuyển sang repo mới.
+Kho lưu trữ này gồm Frontend (React) và Backend (Node.js/Express) cho ứng dụng cửa hàng siêu xe. Tài liệu này hướng dẫn thiết lập môi trường, cách chạy local, và danh sách file/thư mục cần copy để chuyển sang repo mới.
 
 ### 1) Công nghệ sử dụng
 - Backend: Node.js, Express, MongoDB (Mongoose), JWT (access + refresh qua cookie httpOnly), Nodemailer (Gmail OTP), Multer (upload ảnh).
 - Frontend: React (CRA), Axios có interceptor (tự refresh token), React Router.
 
 ### 2) Cấu trúc dự án (chính)
-- `BE/ClothingStoreSDN/`
+- `BE`
   - `src/server.js`: Khởi tạo Express, CORS, static uploads, mount routes, kết nối DB.
   - `src/routes/`: Các router API (`auth`, `users`, `products`, `categories`, `carts`, `orders`, `statistics`).
   - `src/controllers/`: Xử lý request cho từng domain.
   - `src/models/`: Mongoose models (User, Product, Category, Cart, Order, OTP).
   - `src/middleware/`: Auth (JWT/RBAC) và upload middleware.
   - `src/uploads/`: Ảnh upload (avatars/products) phục vụ tĩnh.
-- `FE/FE_Clothing_Store_SDN/`
+- `FE`
   - `src/utils/createInstance.js`: Tạo axios instance, tự làm mới access token.
   - `src/utils/constant.js`: Hằng số URL API và URL ảnh (môi trường dev).
   - `src/api/`: Lớp client gọi API (auth, user, product, category, cart, order, statistics).
@@ -27,7 +27,7 @@ Kho lưu trữ này gồm Frontend (React) và Backend (Node.js/Express) cho ứ
 
 ### 4) Biến môi trường
 
-Backend (`BE/ClothingStoreSDN/.env`):
+Backend (`BE/.env`):
 ```
 PORT=8000                    # Khuyến nghị 8000 để khớp FE mặc định
 DATABASE_URL=mongodb+srv://<user>:<pass>@<host>/<db>?retryWrites=true&w=majority
@@ -79,14 +79,14 @@ Ghi chú
 ### 7) Cần copy gì sang repo mới
 
 Bắt buộc — Backend
-- Copy toàn bộ thư mục `BE/ClothingStoreSDN/`
+- Copy toàn bộ thư mục `BE`
   - Giữ: `src/` (toàn bộ: `controllers`, `routes`, `models`, `middleware`, `config`, `uploads`)
   - Giữ: `package.json`, `package-lock.json`
   - Tạo mới: `.env` (KHÔNG commit), có thể thêm `.env.example`
   - Tuỳ chọn: xoá nội dung `src/uploads/` nếu muốn sạch dữ liệu ảnh mẫu
 
 Bắt buộc — Frontend
-- Copy toàn bộ thư mục `FE/FE_Clothing_Store_SDN/`
+- Copy toàn bộ thư mục `FE`
   - Giữ: `src/` (đặc biệt `utils/createInstance.js`, `utils/constant.js`, `api/`, `pages/`, `components/`)
   - Giữ: `public/`, `package.json`, `package-lock.json`
   - Cập nhật: `src/utils/constant.js` hoặc chuyển sang biến môi trường `REACT_APP_*` (đặt `.env` ở root FE, không commit)
@@ -97,9 +97,9 @@ Tuỳ chọn / Không bắt buộc
 
 ### 8) Checklist migrate nhanh
 1. Tạo repo trống mới.
-2. Copy `BE/ClothingStoreSDN/` và `FE/FE_Clothing_Store_SDN/` vào root repo mới.
+2. Copy `BE` và `FE` vào root repo mới.
 3. Thêm `.gitignore` ở root (Node, React, env files, uploads nếu muốn).
-4. Tạo `BE/ClothingStoreSDN/.env` với secret và URL MongoDB của bạn.
+4. Tạo `BE/.env` với secret và URL MongoDB của bạn.
 5. Kiểm tra `API_BASE_URL` và `URL_IMG` ở FE khớp với `PORT` backend.
 6. Chạy `npm install` cho cả FE và BE, sau đó start cả hai.
 7. Kiểm thử các luồng: auth (login/register/OTP), danh sách sản phẩm, giỏ hàng, checkout, admin.
