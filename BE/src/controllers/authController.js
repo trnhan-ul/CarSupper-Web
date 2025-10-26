@@ -103,6 +103,77 @@ const register = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 };
+
+const verifyOTPRegister = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and OTP are required",
+            });
+        }
+
+        const storedOTP = await OTP.findOne({ email, otp });
+        if (!storedOTP) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP",
+            });
+        }
+
+        if (storedOTP.expiresAt < Date.now()) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP Expired",
+            });
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: "Email already registered",
+            });
+        }
+
+        const { fullName, password, address, phone, avatar, gender } =
+            storedOTP.tempUserData;
+
+        const newUser = new User({
+            fullName,
+            email,
+            password,
+            address,
+            phone,
+            avatar,
+            gender,
+        });
+
+        await newUser.save();
+        await OTP.deleteOne({ email, otp });
+
+        res.status(201).json({
+            success: true,
+            message: "Registration successful! Please log in to continue.",
+            data: { email },
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+
+
+
+
+
+
 const sendOTP = async (email, otp, type = "register") => {
     try {
         const transporter = nodemailer.createTransport({
@@ -182,4 +253,5 @@ const sendOTP = async (email, otp, type = "register") => {
 };
 module.exports = {
     register,
+    verifyOTPRegister,
 };
