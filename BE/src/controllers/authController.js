@@ -167,7 +167,57 @@ const verifyOTPRegister = async (req, res) => {
     }
 };
 
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Incorrect email or password. Please try again.",
+            });
+        }
+
+        if (user.status === "inactive") {
+            return res.status(403).json({
+                success: false,
+                message: "Your account has been blocked by admin.",
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Incorrect email or password. Please try again.",
+            });
+        }
+
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            path: "/",
+            sameSite: "strict",
+        });
+
+        const { password: _, ...userData } = user._doc;
+        res.json({
+            success: true,
+            message: "Login successful",
+            data: { ...userData, accessToken },
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message:
+                "An error occurred while processing your request. Please try again later.",
+        });
+    }
+};
 
 
 
@@ -254,4 +304,5 @@ const sendOTP = async (email, otp, type = "register") => {
 module.exports = {
     register,
     verifyOTPRegister,
+    login,
 };
