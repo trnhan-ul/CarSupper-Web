@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String },
     gender: {
       type: String,
-      enum: ["male", "female"],
+      enum: ["male", "female", "other"],
       default: null,
     },
     phone: {

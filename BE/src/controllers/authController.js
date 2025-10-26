@@ -301,8 +301,127 @@ const sendOTP = async (email, otp, type = "register") => {
         throw new Error("Không thể gửi email OTP. Vui lòng thử lại sau.");
     }
 };
+const logout = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            return res
+                .status(400)
+                .json({ success: false, message: "No refresh token found" });
+        }
+
+        res.clearCookie("refreshToken");
+
+        return res
+            .status(200)
+            .json({ success: true, message: "Logout successful" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Logout failed" });
+    }
+};
+
+
+const refreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            return res
+                .status(401)
+                .json({ success: false, message: "No refresh token provided." });
+        }
+
+        const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const newAccessToken = generateAccessToken(user);
+        const newRefreshToken = generateRefreshToken(user);
+
+        res.cookie("refreshToken", newRefreshToken, {
+            httpOnly: true,
+            secure: false,
+            path: "/",
+            sameSite: "strict",
+        });
+
+        res.status(200).json({ success: true, accessToken: newAccessToken });
+    } catch (error) {
+        res
+            .status(403)
+            .json({ success: false, message: "Refresh token invalid or expired." });
+    }
+};
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res
+                .status(400)
+                .json({ success: false, message: "Email is required." });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res
+                .status(404)
+                .json({ success: false, message: "No account found with that email." });
+        }
+
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpires = Date.now() + 15 * 60 * 1000;
+
+        const existingOTP = await OTP.findOne({ email });
+
+        if (existingOTP) {
+            await OTP.findOneAndUpdate(
+                { email },
+                {
+                    otp: otpCode,
+                    expiresAt: otpExpires,
+                },
+                { new: true }
+            );
+        } else {
+            await OTP.create({
+                email,
+                otp: otpCode,
+                expiresAt: otpExpires,
+            });
+        }
+
+        await sendOTP(email, otpCode, "reset");
+
+        res.json({ success: true, message: "OTP sent. Please check your email." });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+const verifyOTPForgotPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        const storedOTP = await OTP.findOne({ email, otp });
+        if (!storedOTP || storedOTP.expiresAt < Date.now()) {
+            return res
+                .status(400)
+                .json({ success: false, message: "Invalid or expired OTP." });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await User.findOneAndUpdate({ email }, { password: hashedPassword });
+
+        await OTP.deleteOne({ email });
+        res.json({
+            success: true,
+            message: "Password has been reset successfully.",
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
 module.exports = {
     register,
     verifyOTPRegister,
     login,
+    logout,
+    refreshToken,
+    forgotPassword,
+    verifyOTPForgotPassword,
 };
