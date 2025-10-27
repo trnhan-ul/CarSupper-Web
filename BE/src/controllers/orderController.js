@@ -1,6 +1,7 @@
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
+const User = require("../models/userModel");
 
 const createOrder = async (req, res) => {
   try {
@@ -345,7 +346,13 @@ const addOrderFeedback = async (req, res) => {
       });
     }
 
-    order.feedback = feedback.feedback;
+    // Accept either `{ feedback: "text" }` or a plain string (depending on frontend usage)
+    let feedbackText = "";
+    if (typeof feedback === "string") feedbackText = feedback;
+    else if (feedback && typeof feedback === "object" && feedback.feedback)
+      feedbackText = feedback.feedback;
+
+    order.feedback = feedbackText;
     await order.save();
 
     res.json({ success: true, message: "Feedback added successfully", order });
