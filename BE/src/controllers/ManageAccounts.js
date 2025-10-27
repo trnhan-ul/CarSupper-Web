@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Spinner, InputGroup, Badge, Card } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getAllUsers, updateStatusUser } from "../../api/userApi";
+import { getAllUsers, updateStatusUser } from "../../../FE/src/api/userApi";
 import { FaSearch, FaUserEdit, FaCheckCircle, FaBan, FaTimesCircle } from "react-icons/fa";
 
 const ManageAccounts = () => {
