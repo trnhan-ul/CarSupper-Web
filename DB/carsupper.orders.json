@@ -1,0 +1,242 @@
+[
+    {
+        "_id": {
+            "$oid": "67d3cfbcec52575c71498479"
+        },
+        "userId": {
+            "$oid": "67d3273853148c78e247ab84"
+        },
+        "items": [
+            {
+                "productId": {
+                    "$oid": "67cde1c834dd98846323bfa2"
+                },
+                "variant": [
+                    {
+                        "color": "Race Red",
+                        "transmission": "Manual",
+                        "engine": "1.0L EcoBoost",
+                        "quantity": 1,
+                        "price": 25000,
+                        "_id": {
+                            "$oid": "67d3cfbcec52575c7149847b"
+                        }
+                    }
+                ],
+                "_id": {
+                    "$oid": "67d3cfbcec52575c7149847a"
+                }
+            }
+        ],
+        "totalAmount": 25000,
+        "shippingAddress": "456 Car Avenue, Ha Noi",
+        "note": "Please deliver during business hours",
+        "status": "pending",
+        "feedback": "",
+        "shippingCost": 0,
+        "isDeleted": false,
+        "createdAt": {
+            "$date": "2025-03-14T06:42:04.722Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T06:42:04.722Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d3d061c8fab4af30821800"
+        },
+        "userId": {
+            "$oid": "67d3273853148c78e247ab84"
+        },
+        "items": [
+            {
+                "productId": {
+                    "$oid": "67cde13534dd98846323bf97"
+                },
+                "variant": [
+                    {
+                        "color": "White Pearl",
+                        "transmission": "Automatic",
+                        "engine": "2.5L Hybrid",
+                        "quantity": 1,
+                        "price": 45000,
+                        "_id": {
+                            "$oid": "67d3d061c8fab4af30821802"
+                        }
+                    }
+                ],
+                "_id": {
+                    "$oid": "67d3d061c8fab4af30821801"
+                }
+            }
+        ],
+        "totalAmount": 45000,
+        "shippingAddress": "456 Car Avenue, Ha Noi",
+        "note": "",
+        "status": "cancelled",
+        "feedback": "",
+        "shippingCost": 0,
+        "isDeleted": true,
+        "createdAt": {
+            "$date": "2025-03-14T06:44:49.648Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T07:08:49.379Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d3d4553aadff53b2f094fd"
+        },
+        "userId": {
+            "$oid": "67d3273853148c78e247ab84"
+        },
+        "items": [
+            {
+                "productId": {
+                    "$oid": "67cde15734dd98846323bf9b"
+                },
+                "variant": [
+                    {
+                        "color": "Obsidian Blue Pearl",
+                        "transmission": "CVT",
+                        "engine": "1.5L Turbo",
+                        "quantity": 1,
+                        "price": 38000,
+                        "_id": {
+                            "$oid": "67d3d4553aadff53b2f094ff"
+                        }
+                    }
+                ],
+                "_id": {
+                    "$oid": "67d3d4553aadff53b2f094fe"
+                }
+            },
+            {
+                "productId": {
+                    "$oid": "67cde24b34dd98846323bfaa"
+                },
+                "variant": [
+                    {
+                        "color": "Alpine White",
+                        "transmission": "8-Speed Automatic",
+                        "engine": "2.0L Turbo I4",
+                        "quantity": 1,
+                        "price": 65000,
+                        "_id": {
+                            "$oid": "67d3d4553aadff53b2f09501"
+                        }
+                    }
+                ],
+                "_id": {
+                    "$oid": "67d3d4553aadff53b2f09500"
+                }
+            }
+        ],
+        "totalAmount": 103000,
+        "shippingAddress": "456 Car Avenue, Ha Noi",
+        "note": "Please call before delivery",
+        "status": "processing",
+        "feedback": "",
+        "shippingCost": 0,
+        "isDeleted": false,
+        "createdAt": {
+            "$date": "2025-03-14T07:01:41.983Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T07:11:17.694Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d3d78728bc6aa1fc67eb3e"
+        },
+        "userId": {
+            "$oid": "67d562828cf0d82f92f55437"
+        },
+        "items": [
+            {
+                "productId": {
+                    "$oid": "67cde25934dd98846323bfae"
+                },
+                "variant": [
+                    {
+                        "color": "Pearl White Multi-Coat",
+                        "transmission": "Single Speed",
+                        "engine": "Electric Motor",
+                        "quantity": 1,
+                        "price": 45000,
+                        "_id": {
+                            "$oid": "67d3d78728bc6aa1fc67eb40"
+                        }
+                    }
+                ],
+                "_id": {
+                    "$oid": "67d3d78728bc6aa1fc67eb3f"
+                }
+            }
+        ],
+        "totalAmount": 45000,
+        "shippingAddress": "789 Vehicle Road, Da Nang",
+        "note": "Electric vehicle delivery - special handling required",
+        "status": "delivered",
+        "feedback": "Excellent service! The Tesla Model 3 exceeded my expectations. Great range and autopilot features work perfectly.",
+        "shippingCost": 0,
+        "isDeleted": false,
+        "createdAt": {
+            "$date": "2025-03-14T07:15:19.523Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T10:02:54.306Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d3d78728bc6aa1fc67eb4e"
+        },
+        "userId": {
+            "$oid": "67d70a21b052b3326befbf04"
+        },
+        "items": [
+            {
+                "productId": {
+                    "$oid": "67cde34a34dd98846323bfb2"
+                },
+                "variant": [
+                    {
+                        "color": "Summit White",
+                        "transmission": "10-Speed Automatic",
+                        "engine": "2.7L Turbo I4",
+                        "quantity": 1,
+                        "price": 48000,
+                        "_id": {
+                            "$oid": "67d3d78728bc6aa1fc67eb4f"
+                        }
+                    }
+                ],
+                "_id": {
+                    "$oid": "67d3d78728bc6aa1fc67eb50"
+                }
+            }
+        ],
+        "totalAmount": 48000,
+        "shippingAddress": "321 Motor Street, Can Tho",
+        "note": "Need pickup truck for business use",
+        "status": "shipped",
+        "feedback": "",
+        "shippingCost": 0,
+        "isDeleted": false,
+        "createdAt": {
+            "$date": "2025-03-14T08:15:19.523Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T11:02:54.306Z"
+        },
+        "__v": 0
+    }
+]

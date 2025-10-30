@@ -1,0 +1,140 @@
+[
+    {
+        "_id": {
+            "$oid": "67cddf7234dd98846323bf7f"
+        },
+        "name": "Sedan",
+        "vehicleType": [
+            "Passenger"
+        ],
+        "createdAt": {
+            "$date": "2025-03-09T18:35:30.033Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T09:01:10.068Z"
+        },
+        "__v": 0,
+        "status": "active"
+    },
+    {
+        "_id": {
+            "$oid": "67cddf8f34dd98846323bf82"
+        },
+        "name": "SUV",
+        "vehicleType": [
+            "Passenger",
+            "Commercial"
+        ],
+        "createdAt": {
+            "$date": "2025-03-09T18:35:59.393Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-10T08:01:22.241Z"
+        },
+        "__v": 0,
+        "status": "active"
+    },
+    {
+        "_id": {
+            "$oid": "67cddf9834dd98846323bf85"
+        },
+        "name": "Hatchback",
+        "vehicleType": [
+            "Passenger"
+        ],
+        "createdAt": {
+            "$date": "2025-03-09T18:36:08.134Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-09T18:36:08.134Z"
+        },
+        "__v": 0,
+        "status": "active"
+    },
+    {
+        "_id": {
+            "$oid": "67cddf9f34dd98846323bf88"
+        },
+        "name": "Pickup Truck",
+        "vehicleType": [
+            "Commercial",
+            "Passenger"
+        ],
+        "createdAt": {
+            "$date": "2025-03-09T18:36:15.459Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-09T18:36:15.459Z"
+        },
+        "__v": 0,
+        "status": "active"
+    },
+    {
+        "_id": {
+            "$oid": "67cddfb434dd98846323bf8e"
+        },
+        "name": "Coupe",
+        "vehicleType": [
+            "Passenger"
+        ],
+        "isActive": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:36:36.869Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-09T18:36:36.869Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67cde697f0731625f00faf75"
+        },
+        "name": "Convertible",
+        "vehicleType": [
+            "Passenger"
+        ],
+        "__v": 0,
+        "createdAt": {
+            "$date": "2025-03-09T18:36:36.869Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-09T18:36:36.869Z"
+        },
+        "status": "active"
+    },
+    {
+        "_id": {
+            "$oid": "67d07bde506f6c961bda9ccd"
+        },
+        "name": "Electric Vehicle",
+        "vehicleType": [
+            "Passenger"
+        ],
+        "createdAt": {
+            "$date": "2025-03-11T18:07:26.711Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T08:56:42.697Z"
+        },
+        "__v": 0,
+        "status": "active"
+    },
+    {
+        "_id": {
+            "$oid": "67d541c266333abe9ce20b2f"
+        },
+        "name": "Luxury",
+        "vehicleType": [
+            "Passenger"
+        ],
+        "status": "inactive",
+        "createdAt": {
+            "$date": "2025-03-15T09:00:50.244Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T09:01:06.830Z"
+        },
+        "__v": 0
+    }
+]

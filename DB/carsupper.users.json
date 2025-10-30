@@ -1,0 +1,128 @@
+[
+    {
+        "_id": {
+            "$oid": "67c9bbc0a93b56a21c71c65f"
+        },
+        "fullName": "Nguyen Van Minh",
+        "email": "minhnv@carsupper.com",
+        "password": "$2b$10$t0RucSWInlFrhTp8LALNdeGbcnk19TiKxmEqhsUvrkg1TyNyl/OIe",
+        "isAdmin": true,
+        "avatar": "avatars/admin-avatar.jpg",
+        "gender": "male",
+        "phone": "0123456789",
+        "address": "123 Auto Street, Ho Chi Minh City",
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-06T15:14:08.585Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-13T17:34:59.231Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d3273853148c78e247ab84"
+        },
+        "fullName": "Tran Thi Lan",
+        "email": "lantt@gmail.com",
+        "password": "$2b$10$YAlstVI4B69AKy6vGPzvdONJx/QyDRc1SjGRrAn.DdtkfrgUfKwu.",
+        "isAdmin": false,
+        "avatar": "avatars/customer-1.jpg",
+        "gender": "female",
+        "phone": "0987654321",
+        "address": "456 Car Avenue, Ha Noi",
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-13T18:43:04.527Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-16T17:23:44.627Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d562828cf0d82f92f55437"
+        },
+        "fullName": "Le Van Duc",
+        "email": "duclv@gmail.com",
+        "password": "$2b$10$O1kv1gTPHqEq/KdLKzOou.kITrTPyIJ4XZQ790g2Kehp1KHHvzxue",
+        "isAdmin": false,
+        "avatar": "avatars/customer-2.jpg",
+        "gender": "male",
+        "phone": "0912345678",
+        "address": "789 Vehicle Road, Da Nang",
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-15T11:20:34.424Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T11:32:14.236Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d70a21b052b3326befbf04"
+        },
+        "fullName": "Pham Thi Mai",
+        "email": "maipm@gmail.com",
+        "password": "$2b$10$YAlstVI4B69AKy6vGPzvdONJx/QyDRc1SjGRrAn.DdtkfrgUfKwu.",
+        "isAdmin": false,
+        "avatar": "avatars/customer-3.jpg",
+        "gender": "female",
+        "phone": "0765432109",
+        "address": "321 Motor Street, Can Tho",
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-13T18:43:04.527Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-16T17:23:44.627Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d70a46b052b3326befbf06"
+        },
+        "fullName": "Hoang Van Nam",
+        "email": "namhv@gmail.com",
+        "password": "$2b$10$YAlstVI4B69AKy6vGPzvdONJx/QyDRc1SjGRrAn.DdtkfrgUfKwu.",
+        "isAdmin": false,
+        "avatar": "avatars/customer-4.jpg",
+        "gender": "male",
+        "phone": "0654321098",
+        "address": "654 Auto Lane, Hai Phong",
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-13T18:43:04.527Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-16T17:23:44.627Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67d70a65b052b3326befbf08"
+        },
+        "fullName": "CarSuper Admin",
+        "email": "admin@gmail.com",
+        "password": "$2b$10$YAlstVI4B69AKy6vGPzvdONJx/QyDRc1SjGRrAn.DdtkfrgUfKwu.",
+        "isAdmin": true,
+        "avatar": "avatars/admin-avatar-2.jpg",
+        "gender": "male",
+        "phone": "0123456789",
+        "address": "CarSuper Headquarters, Ho Chi Minh City",
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-13T18:43:04.527Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-16T17:23:44.627Z"
+        },
+        "__v": 0
+    }
+]

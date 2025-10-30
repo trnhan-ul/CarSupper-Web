@@ -1,0 +1,364 @@
+[
+    {
+        "_id": {
+            "$oid": "67cde13534dd98846323bf97"
+        },
+        "name": "Toyota Camry 2024",
+        "description": "Luxury sedan with advanced safety features and premium interior.",
+        "price": 45000,
+        "discountPrice": 42000,
+        "category": {
+            "$oid": "67cddf7234dd98846323bf7f"
+        },
+        "images": [
+            "products/camry-2024-1.jpg",
+            "products/camry-2024-2.jpg"
+        ],
+        "variants": [
+            {
+                "color": "White Pearl",
+                "transmission": "Automatic",
+                "engine": "2.5L Hybrid",
+                "stock": 5,
+                "_id": {
+                    "$oid": "67cde13534dd98846323bf98"
+                }
+            },
+            {
+                "color": "Midnight Black",
+                "transmission": "Automatic",
+                "engine": "2.5L Hybrid",
+                "stock": 3,
+                "_id": {
+                    "$oid": "67cde13534dd98846323bf99"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:43:01.081Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T09:36:45.037Z"
+        },
+        "__v": 6
+    },
+    {
+        "_id": {
+            "$oid": "67cde15734dd98846323bf9b"
+        },
+        "name": "Honda CR-V 2024",
+        "description": "Spacious SUV perfect for families with excellent fuel efficiency.",
+        "price": 38000,
+        "discountPrice": 0,
+        "category": {
+            "$oid": "67cddf8f34dd98846323bf82"
+        },
+        "images": [
+            "products/crv-2024-1.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Obsidian Blue Pearl",
+                "transmission": "CVT",
+                "engine": "1.5L Turbo",
+                "stock": 8,
+                "_id": {
+                    "$oid": "67cde15734dd98846323bf9c"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:43:35.771Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T09:36:57.556Z"
+        },
+        "__v": 1
+    },
+    {
+        "_id": {
+            "$oid": "67cde1c834dd98846323bfa2"
+        },
+        "name": "Ford Focus 2024",
+        "description": "Compact hatchback with sporty design and agile handling.",
+        "price": 25000,
+        "discountPrice": 23000,
+        "category": {
+            "$oid": "67cddf9834dd98846323bf85"
+        },
+        "images": [
+            "products/focus-2024-1.jpg",
+            "products/focus-2024-2.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Race Red",
+                "transmission": "Manual",
+                "engine": "1.0L EcoBoost",
+                "stock": 12,
+                "_id": {
+                    "$oid": "67cde1c834dd98846323bfa3"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:45:28.488Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-15T09:38:14.985Z"
+        },
+        "__v": 1
+    },
+    {
+        "_id": {
+            "$oid": "67cde21a34dd98846323bfa6"
+        },
+        "name": "Ford F-150 2024",
+        "description": "Powerful pickup truck with towing capacity and modern technology.",
+        "price": 55000,
+        "discountPrice": 52000,
+        "category": {
+            "$oid": "67cddf9f34dd98846323bf88"
+        },
+        "images": [
+            "products/f150-2024-1.jpg",
+            "products/f150-2024-2.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Oxford White",
+                "transmission": "10-Speed Automatic",
+                "engine": "3.5L EcoBoost V6",
+                "stock": 4,
+                "_id": {
+                    "$oid": "67cde21a34dd98846323bfa7"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:46:50.902Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T18:32:01.851Z"
+        },
+        "__v": 1
+    },
+    {
+        "_id": {
+            "$oid": "67cde24b34dd98846323bfaa"
+        },
+        "name": "BMW 3 Series 2024",
+        "description": "Luxury sedan with sporty performance and premium features.",
+        "price": 65000,
+        "discountPrice": 62000,
+        "category": {
+            "$oid": "67cddf7234dd98846323bf7f"
+        },
+        "images": [
+            "products/bmw-3series-1.jpg",
+            "products/bmw-3series-2.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Alpine White",
+                "transmission": "8-Speed Automatic",
+                "engine": "2.0L Turbo I4",
+                "stock": 2,
+                "_id": {
+                    "$oid": "67cde24b34dd98846323bfab"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:47:39.989Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T18:36:08.390Z"
+        },
+        "__v": 2
+    },
+    {
+        "_id": {
+            "$oid": "67cde25934dd98846323bfae"
+        },
+        "name": "Tesla Model 3 2024",
+        "description": "Electric sedan with autopilot and long-range capability.",
+        "price": 45000,
+        "discountPrice": 43000,
+        "category": {
+            "$oid": "67d07bde506f6c961bda9ccd"
+        },
+        "images": [
+            "products/tesla-model3-1.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Pearl White Multi-Coat",
+                "transmission": "Single Speed",
+                "engine": "Electric Motor",
+                "stock": 6,
+                "_id": {
+                    "$oid": "67cde25934dd98846323bfaf"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:47:53.013Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T18:32:12.086Z"
+        },
+        "__v": 1
+    },
+    {
+        "_id": {
+            "$oid": "67cde34a34dd98846323bfb2"
+        },
+        "name": "Chevrolet Silverado 2024",
+        "description": "Heavy-duty pickup with advanced towing technology.",
+        "price": 48000,
+        "discountPrice": 45000,
+        "category": {
+            "$oid": "67cddf9f34dd98846323bf88"
+        },
+        "images": [
+            "products/silverado-2024-1.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Summit White",
+                "transmission": "10-Speed Automatic",
+                "engine": "2.7L Turbo I4",
+                "stock": 7,
+                "_id": {
+                    "$oid": "67cde34a34dd98846323bfb3"
+                }
+            },
+            {
+                "color": "Black",
+                "transmission": "10-Speed Automatic",
+                "engine": "5.3L V8",
+                "stock": 5,
+                "_id": {
+                    "$oid": "67cde34a34dd98846323bfb4"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:51:54.711Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T18:32:33.853Z"
+        },
+        "__v": 1
+    },
+    {
+        "_id": {
+            "$oid": "67cde38434dd98846323bfb9"
+        },
+        "name": "Mazda CX-5 2024",
+        "description": "Compact SUV with premium interior and sporty driving dynamics.",
+        "price": 32000,
+        "discountPrice": 30000,
+        "category": {
+            "$oid": "67cddf8f34dd98846323bf82"
+        },
+        "images": [
+            "products/cx5-2024-1.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Soul Red Crystal Metallic",
+                "transmission": "6-Speed Automatic",
+                "engine": "2.5L Skyactiv-G",
+                "stock": 9,
+                "_id": {
+                    "$oid": "67cde38434dd98846323bfba"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:52:52.334Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-09T18:52:52.334Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67cde3bc34dd98846323bfc0"
+        },
+        "name": "Audi A4 2024",
+        "description": "Luxury compact sedan with quattro all-wheel drive.",
+        "price": 42000,
+        "discountPrice": 40000,
+        "category": {
+            "$oid": "67cddf7234dd98846323bf7f"
+        },
+        "images": [
+            "products/audi-a4-1.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Brilliant Black",
+                "transmission": "7-Speed S tronic",
+                "engine": "2.0L Turbo I4",
+                "stock": 3,
+                "_id": {
+                    "$oid": "67cde3bc34dd98846323bfc1"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:53:48.492Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T18:33:21.920Z"
+        },
+        "__v": 2
+    },
+    {
+        "_id": {
+            "$oid": "67cde41322306f66c633a453"
+        },
+        "name": "Mercedes-Benz C-Class 2024",
+        "description": "Luxury sedan with advanced technology and premium comfort.",
+        "price": 58000,
+        "discountPrice": 55000,
+        "category": {
+            "$oid": "67cddf7234dd98846323bf7f"
+        },
+        "images": [
+            "products/mercedes-cclass-1.jpg"
+        ],
+        "variants": [
+            {
+                "color": "Obsidian Black Metallic",
+                "transmission": "9-Speed Automatic",
+                "engine": "2.0L Turbo I4",
+                "stock": 2,
+                "_id": {
+                    "$oid": "67cde41322306f66c633a454"
+                }
+            }
+        ],
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-03-09T18:55:15.414Z"
+        },
+        "updatedAt": {
+            "$date": "2025-03-14T18:32:55.709Z"
+        },
+        "__v": 1
+    }
+]
