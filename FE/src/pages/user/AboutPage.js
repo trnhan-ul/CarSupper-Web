@@ -9,36 +9,36 @@ const AboutPage = () => {
         <Col md={8}>
           <Card className="p-4 shadow">
             <Card.Body>
-              <h2 className="text-center mb-4">About UniStyle Clothing</h2>
+              <h2 className="text-center mb-4">About CarSupper</h2>
               <p>
-                Welcome to UniStyle Clothing – where fashion meets comfort. Our
-                mission is to bring you high-quality, stylish, and affordable
-                clothing that makes you feel confident every day.
+                Welcome to <strong>CarSupper</strong> - where passion meets performance.
+                We are dedicated to bringing you the best cars, from elegant city rides
+                to powerful SUVs, all designed to elevate your driving experience.
               </p>
               <p>
-                We believe in sustainability and ethical production. Every piece
-                of our collection is crafted with care, ensuring a perfect blend
-                of modern trends and timeless designs.
+                At CarSupper, we believe buying a car should be exciting and effortless.
+                Our platform connects you with a wide range of trusted dealers and
+                high-quality vehicles, ensuring transparency, safety, and satisfaction
+                in every transaction.
               </p>
               <p>
-                UniStyle Clothing is dedicated to innovation in fashion. We
-                incorporate the latest materials and designs to create apparel
-                that fits perfectly into the dynamic lifestyle of modern
-                individuals. Whether you are looking for casual wear,
-                streetwear, or sophisticated fashion, we have something for
-                everyone.
+                We are committed to innovation and reliability. Whether you are
+                searching for a new car, a pre-owned vehicle, or simply exploring
+                the latest automotive trends, CarSupper is here to guide you
+                every step of the way.
               </p>
               <p>
-                Our collections are designed for versatility, allowing you to
-                express yourself confidently in any setting. We aim to empower
-                people through fashion by making high-quality, fashionable
-                clothing accessible to all.
+                Our mission is simple: to help you find the car that fits your
+                lifestyle, budget, and dreams. With detailed listings, expert
+                insights, and personalized support, we make car shopping smarter
+                and more enjoyable.
               </p>
               <p>
-                Thank you for choosing UniStyle Clothing. Join us on our journey
-                to redefine fashion, one outfit at a time.
+                Thank you for choosing <strong>CarSupper</strong>.
+                Let's drive the future together — one journey at a time.
               </p>
             </Card.Body>
+
           </Card>
         </Col>
       </Row>

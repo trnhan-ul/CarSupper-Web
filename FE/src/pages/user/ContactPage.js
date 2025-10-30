@@ -90,15 +90,15 @@ const Contact = () => {
         <Col md={6}>
           <p>
             <FaMapMarkerAlt className="me-2 text-danger" />
-            <strong> Address:</strong> Group 2 SDN301
+            <strong> Address:</strong> Group 4 SDN301
           </p>
           <p>
             <FaPhone className="me-2 text-success" />
-            <strong> Phone:</strong> 0706730860
+            <strong> Phone:</strong> 0000000000
           </p>
           <p>
             <FaEnvelope className="me-2 text-primary" />
-            <strong> Email:</strong> group2sdn301@unistyles.com
+            <strong> Email:</strong> group4sdn301@carsupper.com
           </p>
 
           <h5>Follow Us</h5>
