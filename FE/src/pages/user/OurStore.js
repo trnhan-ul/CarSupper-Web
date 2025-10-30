@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { ProductCard } from "../../components/ProductCard";
 import Sidebar from "../../components/Sidebar";
 import { Container, Button } from "react-bootstrap";
@@ -29,7 +29,7 @@ const OurStore = () => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setIsFetching(true);
     try {
       const queryParams = new URLSearchParams({
@@ -42,36 +42,37 @@ const OurStore = () => {
       if (maxPrice) queryParams.append("maxPrice", maxPrice);
       if (searchTerm) queryParams.append("name", searchTerm);
       queryParams.append("status", "active");
-
       const res = await axios.get(`${API_BASE_URL}/products?${queryParams}`);
-      const { data, pagination } = res.data;
+      let data = [];
+      let pag = { currentPage, totalPages: 1 };
+      if (Array.isArray(res.data)) {
+        data = res.data;
+      } else if (res.data.products) {
+        data = res.data.products;
+        if (res.data.pagination) pag = res.data.pagination;
+      } else if (res.data.data) {
+        data = res.data.data;
+        if (res.data.pagination) pag = res.data.pagination;
+      }
       setAllProducts(data);
-      setPagination(pagination);
+      setPagination(pag);
     } catch (error) {
       console.error("Error fetching products:", error);
       setAllProducts([]);
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [currentPage, selectedGender, selectedCategory, minPrice, maxPrice, searchTerm]);
 
   useEffect(() => {
     fetchProducts();
-  }, [
-    currentPage,
-    selectedGender,
-    selectedCategory,
-    minPrice,
-    maxPrice,
-    searchTerm,
-  ]);
+  }, [fetchProducts]);
 
   const handleNextPage = () => {
     if (currentPage < pagination.totalPages) {
       setCurrentPage((prev) => prev + 1);
     }
   };
-
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
