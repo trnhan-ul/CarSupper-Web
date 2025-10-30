@@ -1,66 +1,55 @@
-// orderApi.js
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constant";
 import { createAxios } from "../utils/createInstance";
+const axiosJWT = createAxios();
 
 export const getAllOrders = async () => {
-  const res = await axios.get(`${API_BASE_URL}/orders`);
+  const res = await axiosJWT.get(`/orders`);
   return res.data;
 };
 
 export const getOrderDetail = async (id) => {
-  const res = await axios.get(`${API_BASE_URL}/orders/${id}`);
+  const res = await axiosJWT.get(`/orders/${id}`);
   return res.data;
 };
-
-// Lấy order theo userId (RESTful: /orders?userId=xxx)
 export const getOrdersByUser = async (userId) => {
-  const res = await axios.get(`${API_BASE_URL}/orders?userId=${userId}`);
+  const res = await axiosJWT.get(`/orders?userId=${userId}`);
   return res.data;
 };
-
 export const createOrder = async (order) => {
-  const res = await axios.post(`${API_BASE_URL}/orders`, order);
+  const res = await axiosJWT.post(`/orders`, order);
   return res.data;
 };
-
 export const updateOrderStatusByAdmin = async (id, status) => {
-  const axiosJWT = createAxios();
-  const res = await axiosJWT.put(`${API_BASE_URL}/orders/${id}`, { status });
+  const res = await axiosJWT.put(`/orders/${id}`, { status });
   return res.data;
 };
-
 export const cancelOrderByUser = async ({ orderId }) => {
   try {
-    const axiosJWT = createAxios();
-    const res = await axiosJWT.put(`${API_BASE_URL}/orders/cancel`, {
+    const res = await axiosJWT.put(`/orders/cancel`, {
       orderId,
     });
-    return res.data.order; // Trả về đơn hàng đã hủy
+    return res.data.order;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to cancel order");
   }
 };
-
 export const addFeedbackToOrder = async (orderId, feedback) => {
   try {
-    const axiosJWT = createAxios();
     const res = await axiosJWT.put(
-      `${API_BASE_URL}/orders/${orderId}/feedback`,
+      `/orders/${orderId}/feedback`,
       { feedback }
     );
-    return res.data.order; // Trả về đơn hàng đã thêm feedback
+    return res.data.order;
   } catch (error) {
     console.error("Error adding feedback:", error);
     throw new Error(error.response?.data?.message || "Failed to add feedback");
   }
 };
-
 export const softDeleteOrder = async (orderId) => {
   try {
-    const axiosJWT = createAxios();
-    const res = await axiosJWT.delete(`${API_BASE_URL}/orders/${orderId}`);
-    return res.data.order; // Trả về đơn hàng đã xóa mềm
+    const res = await axiosJWT.delete(`/orders/${orderId}`);
+    return res.data.order;
   } catch (error) {
     console.error("Error deleting order:", error);
     throw new Error(error.response?.data?.message || "Failed to delete order");

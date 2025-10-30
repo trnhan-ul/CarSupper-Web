@@ -25,5 +25,5 @@ export const updateStatusProduct = updateProduct;
 
 export const deleteProduct = async (id) => {
   const res = await axios.delete(`${API_BASE_URL}/products/${id}`);
-  return res.data;
+    return res.data;
 };

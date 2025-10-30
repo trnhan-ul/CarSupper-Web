@@ -1,6 +1,8 @@
 // userApi.js
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constant";
+import { createAxios } from "../utils/createInstance";
+const axiosJWT = createAxios();
 
 export const getAllUsers = async () => {
   const res = await axios.get(`${API_BASE_URL}/users`);
@@ -16,7 +18,11 @@ export const getUserDetail = async (id) => {
 export const getUserById = getUserDetail;
 
 export const updateUser = async (id, data) => {
-  const res = await axios.put(`${API_BASE_URL}/users/${id}`, data);
+  const res = await axiosJWT.put(`/users/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  });
   return res.data;
 };
 
