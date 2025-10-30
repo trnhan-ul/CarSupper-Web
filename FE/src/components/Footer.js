@@ -9,24 +9,24 @@ const Footer = () => {
         <p>
           Contact us at{" "}
           <a
-            href="mailto:support@unistyles.com"
+            href="mailto:support@carsupper.com"
             className="text-white text-decoration-none"
           >
-            support@unistyles.com
+            support@carsupper.com
           </a>{" "}
-          or call 08512345678 for any queries.
+          or call 0000000000 for any queries.
         </p>
         <p>
           For corporate queries, email{" "}
           <a
-            href="mailto:business@unistyle.com"
+            href="mailto:business@carsupper.com"
             className="text-white text-decoration-none"
           >
-            business@unistyle.com
+            business@carsupper.com
           </a>
         </p>
         <p>21 Cai Khe Ward, Ninh Kieu District, Can Tho City</p>
-        <p>UniStyle Clothing - Elevate Your Style</p>
+        <p>CarSupper</p>
 
         <div className="mt-3">
           <a
@@ -48,7 +48,7 @@ const Footer = () => {
         </div>
 
         <p className="mt-3">
-          © {new Date().getFullYear()}, UniStyle Clothing - Powered by Shopify
+          © {new Date().getFullYear()}, CarSupper 
         </p>
       </Container>
     </footer>
