@@ -23,15 +23,15 @@ const HomePage = () => {
   const carousels = [
     {
       id: 1,
-      url: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEji27hydpaCs4kFdF-dwgLa6ZZIrn4zNL9fnOUCvzUKM14I8irBahfO5xzmRHCB1g_iCrBm1gByYyvkIhC2Fs_zDi45TkmdIkC2YnNeQP7OYfk18HTUGGgGYRDp3G0ERZccg7TFSUE-s-I1xq4cpUxUoZR4oPvvq-4O11ASq_ljLbk52J5iK957NGBR/s1280/fashion%20banner%20design.webp",
+      url: "https://i.ytimg.com/vi/i1DfGzvka7M/maxresdefault.jpg",
     },
     {
       id: 2,
-      url: "https://i.ytimg.com/vi/U5Q3Du2W9a0/maxresdefault.jpg",
+      url: "https://blenderartists.org/uploads/default/original/4X/b/f/2/bf2f036d4f597186fe9bc73cceba4ac59943c141.jpeg",
     },
     {
       id: 3,
-      url: "https://graphicsfamily.com/wp-content/uploads/edd/2022/11/Online-Shopping-AD-Banner-Design-in-Photoshop-scaled.jpg",
+      url: "https://images6.alphacoders.com/970/thumb-1920-970345.jpg",
     },
   ];
 

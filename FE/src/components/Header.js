@@ -43,8 +43,7 @@ const Header = () => {
               to="/"
               end
               className={({ isActive }) =>
-                `nav-link px-2 rounded ${
-                  isActive ? "bg-dark text-white" : "text-black"
+                `nav-link px-2 rounded ${isActive ? "bg-dark text-white" : "text-black"
                 }`
               }
             >
@@ -53,8 +52,7 @@ const Header = () => {
             <NavLink
               to="/our-store"
               className={({ isActive }) =>
-                `nav-link px-2 rounded ${
-                  isActive ? "bg-dark text-white" : "text-black"
+                `nav-link px-2 rounded ${isActive ? "bg-dark text-white" : "text-black"
                 }`
               }
             >
@@ -63,8 +61,7 @@ const Header = () => {
             <NavLink
               to="/about"
               className={({ isActive }) =>
-                `nav-link px-2 rounded ${
-                  isActive ? "bg-dark text-white" : "text-black"
+                `nav-link px-2 rounded ${isActive ? "bg-dark text-white" : "text-black"
                 }`
               }
             >
@@ -73,8 +70,7 @@ const Header = () => {
             <NavLink
               to="/contact"
               className={({ isActive }) =>
-                `nav-link px-2 rounded ${
-                  isActive ? "bg-dark text-white" : "text-black"
+                `nav-link px-2 rounded ${isActive ? "bg-dark text-white" : "text-black"
                 }`
               }
             >

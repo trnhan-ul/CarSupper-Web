@@ -66,7 +66,7 @@ ehthumbs.db
 Thumbs.db
 
 # Uploads (keep structure but ignore content)
-BE/src/uploads/*
+# BE/src/uploads/*
 !BE/src/uploads/.gitkeep
 
 # Temporary files

@@ -5,6 +5,11 @@ const categoryRoutes = require("./categoryRoutes");
 const cartRoutes = require("./cartRoutes");
 const orderRoutes = require("./orderRoutes");
 const statisticsRoutes = require("./statisticsRoutes");
+const productRoutes = require("./productRoutes");
+const categoryRoutes = require("./categoryRoutes");
+const cartRoutes = require("./cartRoutes");
+const orderRoutes = require("./orderRoutes");
+const statisticsRoutes = require("./statisticsRoutes");
 
 const route = (app) => {
   app.use("/auth", authRoutes);
