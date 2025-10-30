@@ -19,8 +19,16 @@ export const updateCart = async (userId, cart) => {
   return res.data;
 };
 
+// Alias cho xóa một sản phẩm khỏi cart
 export const deleteCartItem = async (userId, productId) => {
   const res = await axios.delete(`${API_BASE_URL}/carts/${userId}/${productId}`);
+  return res.data;
+};
+export const removeFromCart = deleteCartItem;
+
+// Xóa toàn bộ cart của user (clearCart) nếu backend hỗ trợ
+export const clearCart = async (userId) => {
+  const res = await axios.delete(`${API_BASE_URL}/carts/${userId}`);
   return res.data;
 };
 
@@ -30,4 +38,16 @@ export const updateCartQuantity = async (
 ) => {
   try {
     const axiosJWT = createAxios();
-    const res = await axiosJWT.put(`
+    const res = await axiosJWT.put(`${API_BASE_URL}/carts/${userId}/quantity`, {
+      productId,
+      variantId,
+      quantity,
+    });
+    return res.data.cart; // Trả về cart đã cập nhật
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || "Failed to update cart quantity"
+    );
+    throw error;
+  }
+};

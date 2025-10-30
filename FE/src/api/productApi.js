@@ -20,6 +20,8 @@ export const updateProduct = async (id, product) => {
   const res = await axios.put(`${API_BASE_URL}/products/${id}`, product);
   return res.data;
 };
+// Alias cũ để code không lỗi
+export const updateStatusProduct = updateProduct;
 
 export const deleteProduct = async (id) => {
   const res = await axios.delete(`${API_BASE_URL}/products/${id}`);

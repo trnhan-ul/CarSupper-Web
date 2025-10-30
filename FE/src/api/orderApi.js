@@ -1,14 +1,10 @@
 // orderApi.js
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constant";
+import { createAxios } from "../utils/createInstance";
 
 export const getAllOrders = async () => {
   const res = await axios.get(`${API_BASE_URL}/orders`);
-  return res.data;
-};
-
-export const createOrder = async (order) => {
-  const res = await axios.post(`${API_BASE_URL}/orders`, order);
   return res.data;
 };
 
@@ -17,8 +13,20 @@ export const getOrderDetail = async (id) => {
   return res.data;
 };
 
+// Lấy order theo userId (RESTful: /orders?userId=xxx)
+export const getOrdersByUser = async (userId) => {
+  const res = await axios.get(`${API_BASE_URL}/orders?userId=${userId}`);
+  return res.data;
+};
+
+export const createOrder = async (order) => {
+  const res = await axios.post(`${API_BASE_URL}/orders`, order);
+  return res.data;
+};
+
 export const updateOrderStatusByAdmin = async (id, status) => {
-  const res = await axios.put(`${API_BASE_URL}/orders/${id}`, { status });
+  const axiosJWT = createAxios();
+  const res = await axiosJWT.put(`${API_BASE_URL}/orders/${id}`, { status });
   return res.data;
 };
 
