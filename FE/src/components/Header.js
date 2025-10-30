@@ -32,7 +32,7 @@ const Header = () => {
       <div className="container">
         <div className="d-flex justify-content-between align-items-center">
           <NavLink to="/" className="nav-link text-white">
-            <h4>Unistyle Clothing</h4>
+            <h4>Car Super Store</h4>
           </NavLink>
 
           <nav
