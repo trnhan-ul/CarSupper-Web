@@ -2,6 +2,10 @@ import axios from "axios";
 import { API_BASE_URL } from "../utils/constant";
 import { createAxios } from "../utils/createInstance";
 
+const axiosJWT = createAxios();
+export const fetchProducts = async () => {
+  const res = await axios.get(`${API_BASE_URL}/products`);
+  return res.data;
 export const fetchProducts = async ({
   page = 1,
   limit = 8,
@@ -41,6 +45,15 @@ export const fetchProductById = async (productId) => {
   }
 };
 
+export const createProduct = async (product) => {
+  console.log("Received createProduct request with body:", product);
+  const res = await axiosJWT.post(`${API_BASE_URL}/products`, product);
+  return res.data;
+};
+
+export const updateProduct = async (id, product) => {
+  const res = await axiosJWT.put(`${API_BASE_URL}/products/${id}`, product);
+  return res.data;
 // Tạo sản phẩm mới
 export const createProduct = async (productData) => {
   try {
@@ -70,6 +83,9 @@ export const updateProduct = async (id, productData) => {
   }
 };
 
+export const deleteProduct = async (id) => {
+  const res = await axiosJWT.delete(`${API_BASE_URL}/products/${id}`);
+  return res.data;
 export const updateStatusProduct = async (id, status) => {
   try {
     const axiosJWT = createAxios();

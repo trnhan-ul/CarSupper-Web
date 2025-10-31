@@ -4,7 +4,15 @@ import { toast } from "react-toastify";
 
 const axiosJWT = createAxios();
 
+const axiosJWT = createAxios();
 export const fetchSummary = async () => {
+  const res = await axiosJWT.get(`${API_BASE_URL}/statistics/summary`);
+  return res.data.summary;
+};
+
+export const fetchOrderStatus = async () => {
+  const res = await axiosJWT.get(`${API_BASE_URL}/statistics/order-status`);
+  return res.data.orderStatus;
   try {
     const res = await axiosJWT.get(`${API_BASE_URL}/statistics/summary`, {
       headers: {

@@ -16,7 +16,7 @@ const {
 
 router.get("/", verifyToken, adminMiddleware, getAllUsers);
 router.get("/:userId", verifyToken, canModifyUser, getUserById);
-router.put("/:userId/status", verifyToken, canModifyUser, updateStatusUser);
+router.patch("/:userId/status", verifyToken, canModifyUser, updateStatusUser);
 router.put(
   "/:userId/change-password",
   verifyToken,

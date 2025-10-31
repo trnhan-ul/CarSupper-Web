@@ -15,7 +15,7 @@ const {
 
 const router = express.Router();
 
-router.get("/all", verifyToken, adminMiddleware, getAllOrders);
+router.get("/", verifyToken, adminMiddleware, getAllOrders);
 router.put("/status", verifyToken, adminMiddleware, updateOrderStatusByAdmin);
 router.put("/cancel", verifyToken, cancelOrderByUser);
 router.post("/", verifyToken, createOrder);

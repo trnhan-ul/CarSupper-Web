@@ -2,6 +2,29 @@
 import { API_BASE_URL } from "../utils/constant";
 import { createAxios } from "../utils/createInstance"; // Giả sử bạn đã có authApi.js để xử lý token
 
+export const getAllOrders = async () => {
+  const res = await axiosJWT.get(`/orders/all`);
+  return res.data.data;
+};
+
+export const getOrderDetail = async (id) => {
+  const res = await axiosJWT.get(`/orders/${id}`);
+  return res.data.data;
+};
+export const getOrdersByUser = async (userId) => {
+  const res = await axiosJWT.get(`/orders?userId=${userId}`);
+  return res.data.data;
+};
+export const createOrder = async (order) => {
+  const res = await axiosJWT.post(`/orders`, order);
+  return res.data.order;
+};
+export const updateOrderStatusByAdmin = async (orderId, payload) => {
+  const res = await axiosJWT.put(`${API_BASE_URL}/orders/status`, {
+        orderId,
+        status: payload.status
+      });
+  return res.data.order;
 export const getOrdersByUser = async () => {
   try {
     const axiosJWT = createAxios();

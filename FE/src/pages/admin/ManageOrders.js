@@ -83,10 +83,10 @@ const ManageOrders = () => {
 
     setLoading(true);
     try {
-      const updatedOrder = await updateOrderStatusByAdmin({
-        orderId: selectedOrderId,
-        status: currentStatus,
-      });
+      const updatedOrder = await updateOrderStatusByAdmin(
+        selectedOrderId, // <-- Tham số THỨ NHẤT: là chuỗi ID
+        { status: currentStatus } // <-- Tham số THỨ HAI: là đối tượng payload
+      );
       setOrders(
         orders.map((order) =>
           order._id === selectedOrderId ? updatedOrder : order
@@ -198,7 +198,10 @@ const ManageOrders = () => {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => handleOpenStatusModal(order._id, order.status)}
+                  onClick={() => {
+                      console.log("order._id:", order._id, "Type:", typeof order._id); 
+                      handleOpenStatusModal(order._id, order.status);
+                  }}
                   disabled={
                     loading || order.isDeleted || order.status === "cancelled"
                   }
