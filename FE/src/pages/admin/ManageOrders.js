@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Table,
   Button,
@@ -17,11 +17,11 @@ const ManageOrders = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [showDetailsModal, setShowDetailsModal] = useState(false); 
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [currentStatus, setCurrentStatus] = useState("pending");
-  const [selectedOrder, setSelectedOrder] = useState(null); 
-  const [searchQuery, setSearchQuery] = useState(""); 
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -40,7 +40,7 @@ const ManageOrders = () => {
     fetchOrders();
   }, []);
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) {
       setFilteredOrders(orders);
@@ -52,7 +52,7 @@ const ManageOrders = () => {
       return userEmail.includes(query);
     });
     setFilteredOrders(filtered);
-  };
+  }, [searchQuery, orders]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -60,7 +60,7 @@ const ManageOrders = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [searchQuery, orders]);
+  }, [handleSearch]);
 
   const handleResetSearch = () => {
     setSearchQuery("");
@@ -83,10 +83,10 @@ const ManageOrders = () => {
 
     setLoading(true);
     try {
-      const updatedOrder = await updateOrderStatusByAdmin({
-        orderId: selectedOrderId,
-        status: currentStatus,
-      });
+      const updatedOrder = await updateOrderStatusByAdmin(
+        selectedOrderId, // <-- Tham số THỨ NHẤT: là chuỗi ID
+        { status: currentStatus } // <-- Tham số THỨ HAI: là đối tượng payload
+      );
       setOrders(
         orders.map((order) =>
           order._id === selectedOrderId ? updatedOrder : order
@@ -151,7 +151,7 @@ const ManageOrders = () => {
             <th>Items</th>
             <th>Status</th>
             <th>Created At</th>
-            <th style={{width:240}}>Actions</th>
+            <th style={{ width: 240 }}>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -174,16 +174,16 @@ const ManageOrders = () => {
                     order.status === "pending"
                       ? "warning"
                       : order.status === "in_progress"
-                      ? "info"
-                      : order.status === "done"
-                      ? "success"
-                      : "danger"
+                        ? "info"
+                        : order.status === "done"
+                          ? "success"
+                          : "danger"
                   }
                 >
                   {order.status}
                 </Badge>
               </td>
-             
+
               <td>{formatDate(order.createdAt)}</td>
               <td>
                 <Button
@@ -198,7 +198,10 @@ const ManageOrders = () => {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => handleOpenStatusModal(order._id, order.status)}
+                  onClick={() => {
+                    console.log("order._id:", order._id, "Type:", typeof order._id);
+                    handleOpenStatusModal(order._id, order.status);
+                  }}
                   disabled={
                     loading || order.isDeleted || order.status === "cancelled"
                   }
@@ -249,10 +252,10 @@ const ManageOrders = () => {
                     selectedOrder.status === "pending"
                       ? "warning"
                       : selectedOrder.status === "in_progress"
-                      ? "info"
-                      : selectedOrder.status === "done"
-                      ? "success"
-                      : "danger"
+                        ? "info"
+                        : selectedOrder.status === "done"
+                          ? "success"
+                          : "danger"
                   }
                 >
                   {selectedOrder.status}
@@ -283,10 +286,7 @@ const ManageOrders = () => {
                     <strong>Product:</strong> {item.productId?.name}
                   </p>
                   <p>
-                    <strong>Variant:</strong> Size: {item.variant[0]?.size},
-                    Color: {item.variant[0]?.color}, Quantity:{" "}
-                    {item.variant[0]?.quantity}, Price: $
-                    {item.variant[0]?.price.toFixed(2)}
+                    <strong>Price:</strong> ${item.price?.toFixed(2)}
                   </p>
                 </div>
               ))}

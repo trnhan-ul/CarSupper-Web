@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Container, Table, Button, Modal, Form, InputGroup } from "react-bootstrap";
 import { FaEdit, FaSyncAlt, FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -12,34 +12,36 @@ import { toast } from "react-toastify";
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState([]); 
+  const [filteredCategories, setFilteredCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false); 
-  const [showStatusModal, setShowStatusModal] = useState(false); 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [currentCategory, setCurrentCategory] = useState({
     name: "",
     gender: "",
   });
-  const [currentStatus, setCurrentStatus] = useState("active"); 
+  const [currentStatus, setCurrentStatus] = useState("active");
   const [categoryId, setCategoryId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (!user?.isAdmin) {
+    const adminUser = JSON.parse(localStorage.getItem("adminUser"));
+    const current = adminUser || user;
+    if (!current?.isAdmin) {
       toast.error("You do not have permission to access this page.");
       navigate("/");
       return;
     }
     fetchAllCategories();
-  }, [navigate]);
+  }, [navigate, /* eslint-disable-line react-hooks/exhaustive-deps */]);
 
-  const fetchAllCategories = async () => {
+  const fetchAllCategories = useCallback(async () => {
     setLoading(true);
     try {
-      const categoryData = await fetchCategories(navigate);
+      const categoryData = await fetchCategories();
       setCategories(categoryData);
       setFilteredCategories(categoryData);
     } catch (error) {
@@ -47,12 +49,12 @@ const CategoryManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) {
-      setFilteredCategories(categories); 
+      setFilteredCategories(categories);
       return;
     }
 
@@ -60,7 +62,7 @@ const CategoryManagement = () => {
       category.name.toLowerCase().includes(query)
     );
     setFilteredCategories(filtered);
-  };
+  }, [searchQuery, categories]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -68,7 +70,7 @@ const CategoryManagement = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [searchQuery, categories]);
+  }, [handleSearch]);
 
   const handleResetSearch = () => {
     setSearchQuery("");

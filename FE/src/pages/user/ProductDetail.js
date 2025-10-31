@@ -50,12 +50,13 @@ const ProductDetail = () => {
       navigate("/login");
       return;
     }
+
     const cartItem = {
       productId: product._id,
-      quantity: 1,
     };
+
     try {
-      await addToCart(cartItem, user._id);
+      await addToCart(cartItem);
       toast.success("Added to cart successfully!");
     } catch (error) {
       toast.error(error.message || "Failed to add to cart");

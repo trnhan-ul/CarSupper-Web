@@ -5,91 +5,31 @@ const User = require("../models/userModel");
 
 const createOrder = async (req, res) => {
   try {
-    const { userId, items, shippingAddress, note, shippingCost } = req.body;
-    if (!userId || !items || !shippingAddress) {
+    const userId = (req.user && req.user._id) || req.body.userId;
+    const { items, shippingAddress, note, shippingCost = 0 } = req.body;
 
+    if (!userId || !Array.isArray(items) || items.length === 0 || !shippingAddress) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const cart = await Cart.findOne({ userId });
-    if (!cart || cart.items.length === 0) {
+    if (!cart || !cart.items || cart.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty or not found" });
     }
 
-    for (const orderItem of items) {
-      const { productId, variant } = orderItem;
-
-      const cartItem = cart.items.find(
-        (item) => item.productId.toString() === productId.toString()
-      );
-      if (!cartItem) {
-        return res.status(400).json({
-          message: `Product with ID ${productId} not found in cart`,
-        });
+    let subTotal = 0;
+    const orderItems = [];
+    for (const it of items) {
+      const product = await Product.findById(it.productId);
+      if (!product) {
+        return res.status(404).json({ message: `Product with ID ${it.productId} not found` });
       }
-
-      const cartVariant = cartItem.variants.find(
-        (v) => v.size === variant.size && v.color === variant.color
-      );
-      if (!cartVariant) {
-        return res.status(400).json({
-          message: `Variant (size: ${variant.size}, color: ${variant.color}) for product ${productId} not found in cart`,
-        });
-      }
-
-      if (cartVariant.quantity < variant.quantity) {
-        return res.status(400).json({
-          message: `Insufficient quantity in cart for product ${productId} (size: ${variant.size}, color: ${variant.color})`,
-        });
-      }
+      const price = product.discountPrice !== 0 ? product.discountPrice : product.price;
+      subTotal += price;
+      orderItems.push({ productId: product._id, price });
     }
 
-    const orderItems = await Promise.all(
-      items.map(async (item) => {
-        const { productId, variant } = item;
-
-        const product = await Product.findById(productId);
-        if (!product) {
-          throw new Error(`Product with ID ${productId} not found`);
-        }
-
-        const productVariant = product.variants.find(
-          (v) => v.size === variant.size && v.color === variant.color
-        );
-        if (!productVariant) {
-          throw new Error(
-            `Variant (size: ${variant.size}, color: ${variant.color}) not found in product ${productId}`
-          );
-        }
-
-        const requestedQuantity = variant.quantity;
-        if (productVariant.stock < requestedQuantity) {
-          throw new Error(
-            `Insufficient stock for product ${productId} (size: ${variant.size}, color: ${variant.color})`
-          );
-        }
-
-        productVariant.stock -= requestedQuantity;
-        await product.save();
-
-        return {
-          productId: productId,
-          variant: [
-            {
-              size: variant.size,
-              color: variant.color,
-              quantity: requestedQuantity,
-              price: product.price,
-            },
-          ],
-        };
-      })
-    );
-
-    const totalAmount =
-      orderItems.reduce((sum, item) => {
-        return sum + item.variant[0].price * item.variant[0].quantity;
-      }, 0) + (shippingCost || 0);
+    const totalAmount = subTotal + Number(shippingCost || 0);
 
     const newOrder = new Order({
       userId,
@@ -97,54 +37,25 @@ const createOrder = async (req, res) => {
       totalAmount,
       shippingAddress,
       note,
-      shippingCost: shippingCost || 0,
+      shippingCost: Number(shippingCost || 0),
       status: "pending",
     });
 
     const savedOrder = await newOrder.save();
 
-    for (const orderItem of items) {
-      const { productId, variant } = orderItem;
-
-      const cartItemIndex = cart.items.findIndex(
-        (item) => item.productId.toString() === productId.toString()
-      );
-
-      if (cartItemIndex !== -1) {
-        const cartItem = cart.items[cartItemIndex];
-        const cartVariantIndex = cartItem.variants.findIndex(
-          (v) => v.size === variant.size && v.color === variant.color
-        );
-
-        if (cartVariantIndex !== -1) {
-          const cartVariant = cartItem.variants[cartVariantIndex];
-          if (cartVariant.quantity <= variant.quantity) {
-            cartItem.variants.splice(cartVariantIndex, 1);
-          } else {
-            cartVariant.quantity -= variant.quantity;
-          }
-
-          if (cartItem.variants.length === 0) {
-            cart.items.splice(cartItemIndex, 1);
-          }
-        }
+    const purchasedIds = new Set(items.map((i) => i.productId.toString()));
+    if (cart && Array.isArray(cart.items)) {
+      cart.items = cart.items.filter((ci) => !purchasedIds.has(ci.productId.toString()));
+      if (cart.items.length === 0) {
+        await Cart.deleteOne({ userId });
+      } else {
+        await cart.save();
       }
     }
 
-    if (cart.items.length === 0) {
-      await Cart.deleteOne({ userId });
-    } else {
-      await cart.save();
-    }
-
-    return res.status(201).json({
-      message: "Order created successfully",
-      order: savedOrder,
-    });
+    return res.status(201).json({ message: "Order created successfully", order: savedOrder });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error creating order", error: error.message });
+    return res.status(500).json({ message: "Error creating order", error: error.message });
   }
 };
 
@@ -199,6 +110,7 @@ const getOrdersByUser = async (req, res) => {
   }
 };
 
+// orderController.js (Đoạn mã đã sửa đổi)
 const updateOrderStatusByAdmin = async (req, res) => {
   try {
     const { orderId, status } = req.body;
@@ -212,7 +124,8 @@ const updateOrderStatusByAdmin = async (req, res) => {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
-    const order = await Order.findById(orderId);
+    let order = await Order.findById(orderId); // Dùng `let` để có thể gán lại
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
@@ -223,14 +136,37 @@ const updateOrderStatusByAdmin = async (req, res) => {
       });
     }
 
-    if (status === "cancelled") {
-      for (const orderItem of order.items) {
-        const { productId, variant } = orderItem;
-        const requestedVariant = variant[0];
+    let updatedOrder; // Biến để lưu trữ kết quả cập nhật
 
-        const product = await Product.findById(productId);
+    if (status === "cancelled") {
+      // Khi hủy đơn hàng, cần thực hiện logic trả lại stock
+      // Logic này yêu cầu truy cập order.items, vì vậy không thể dùng findByIdAndUpdate trực tiếp ngay lúc này
+      // Sau khi xử lý stock, bạn cần cập nhật và lưu lại đối tượng order.
+      // Tuy nhiên, lỗi validation xuất phát từ `order.save()`.
+      // Để giải quyết, chúng ta sẽ cố gắng chỉnh sửa order.items nếu nó thiếu trường size
+      // Hoặc cách đơn giản nhất là cập nhật status sau khi xử lý stock,
+      // và sau đó có thể chỉ dùng updateById để thay đổi trạng thái nếu không muốn validation đầy đủ.
+
+      for (const orderItem of order.items) {
+        // Kiểm tra an toàn trước khi truy cập
+        const requestedVariant = orderItem.variant && orderItem.variant.length > 0 ? orderItem.variant[0] : null;
+
+        if (!requestedVariant || !requestedVariant.size || !requestedVariant.color || !requestedVariant.quantity) {
+          // Đây là lúc bạn phát hiện dữ liệu đơn hàng cũ bị lỗi.
+          // Bạn có thể chọn:
+          // 1. Ném lỗi rõ ràng để sửa đơn hàng cũ.
+          // 2. Cung cấp một giá trị mặc định nếu trường đó thiếu (nếu logic cho phép).
+          // 3. Hoặc bỏ qua logic hoàn trả stock nếu item bị lỗi.
+
+          // Đối với mục đích này, chúng ta sẽ ném lỗi để người dùng biết có đơn hàng lỗi.
+          console.error(`Validation Error: Order ${orderId} has an item missing required variant fields: ${JSON.stringify(orderItem)}`);
+          return res.status(400).json({ message: `Order validation failed for item variant: size/color/quantity is required. Please check order ${orderId} data.`, error: `Missing variant fields in order item for product ${orderItem.productId}` });
+          // Nếu bạn KHÔNG muốn ném lỗi mà muốn cố gắng tiếp tục, bạn phải bỏ qua item này hoặc gán giá trị mặc định.
+        }
+
+        const product = await Product.findById(orderItem.productId); // Dùng orderItem.productId, không phải productId biến mới
         if (!product) {
-          throw new Error(`Product with ID ${productId} not found`);
+          throw new Error(`Product with ID ${orderItem.productId} not found`);
         }
 
         const productVariant = product.variants.find(
@@ -240,23 +176,40 @@ const updateOrderStatusByAdmin = async (req, res) => {
         );
         if (!productVariant) {
           throw new Error(
-            `Variant (size: ${requestedVariant.size}, color: ${requestedVariant.color}) not found in product ${productId}`
+            `Variant (size: ${requestedVariant.size}, color: ${requestedVariant.color}) not found in product ${orderItem.productId}`
           );
         }
 
         productVariant.stock += requestedVariant.quantity;
-        await product.save();
+        await product.save(); // Lưu product đã cập nhật stock
+      }
+
+      // Sau khi xử lý hoàn trả stock, cập nhật trạng thái đơn hàng
+      // Dùng findByIdAndUpdate cho chính xác hơn và có thể bỏ qua validation của các trường khác
+      updatedOrder = await Order.findByIdAndUpdate(
+        orderId, // ID của đơn hàng
+        { status: status }, // Chỉ cập nhật trường status
+        { new: true, runValidators: true } // `new: true` để trả về document đã cập nhật, `runValidators: true` để chạy validation trên trường `status`
+      );
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found after update" });
+      }
+
+    } else {
+      // Đối với các trạng thái khác, chỉ cần cập nhật trạng thái trực tiếp
+      updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { status: status },
+        { new: true, runValidators: true }
+      );
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found after update" });
       }
     }
 
-    order.status = status;
-    const updatedOrder = await order.save();
-
-    return res.status(200).json({
-      message: "Order status updated successfully",
-      order: updatedOrder,
-    });
+    return res.status(200).json({ message: "Order status updated successfully", order: updatedOrder });
   } catch (error) {
+    console.error("Error updating order status:", error); // Log lỗi chi tiết ở backend
     return res.status(500).json({
       message: "Error updating order status",
       error: error.message,
@@ -278,46 +231,15 @@ const cancelOrderByUser = async (req, res) => {
     }
 
     if (order.status !== "pending") {
-      return res.status(403).json({
-        message: "Only orders in pending status can be cancelled by users",
-      });
-    }
-
-    for (const orderItem of order.items) {
-      const { productId, variant } = orderItem;
-      const requestedVariant = variant[0];
-
-      const product = await Product.findById(productId);
-      if (!product) {
-        throw new Error(`Product with ID ${productId} not found`);
-      }
-
-      const productVariant = product.variants.find(
-        (v) =>
-          v.size === requestedVariant.size && v.color === requestedVariant.color
-      );
-      if (!productVariant) {
-        throw new Error(
-          `Variant (size: ${requestedVariant.size}, color: ${requestedVariant.color}) not found in product ${productId}`
-        );
-      }
-
-      productVariant.stock += requestedVariant.quantity;
-      await product.save();
+      return res.status(403).json({ message: "Only orders in pending status can be cancelled by users" });
     }
 
     order.status = "cancelled";
     await order.save();
 
-    return res.status(200).json({
-      message: "Order successfully cancelled",
-      order,
-    });
+    return res.status(200).json({ message: "Order successfully cancelled", order });
   } catch (error) {
-    return res.status(500).json({
-      message: "Error cancelling order",
-      error: error.message,
-    });
+    return res.status(500).json({ message: "Error cancelling order", error: error.message });
   }
 };
 
@@ -328,29 +250,20 @@ const addOrderFeedback = async (req, res) => {
 
     const order = await Order.findById(id);
     if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
+      return res.status(404).json({ success: false, message: "Order not found" });
     }
 
     if (order.userId.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Not authorized to add feedback" });
+      return res.status(403).json({ success: false, message: "Not authorized to add feedback" });
     }
 
     if (order.status !== "done") {
-      return res.status(403).json({
-        success: false,
-        message: "Feedback can only be added to orders with status 'done'",
-      });
+      return res.status(403).json({ success: false, message: "Feedback can only be added to orders with status 'done'" });
     }
 
-    // Accept either `{ feedback: "text" }` or a plain string (depending on frontend usage)
     let feedbackText = "";
     if (typeof feedback === "string") feedbackText = feedback;
-    else if (feedback && typeof feedback === "object" && feedback.feedback)
-      feedbackText = feedback.feedback;
+    else if (feedback && typeof feedback === "object" && feedback.feedback) feedbackText = feedback.feedback;
 
     order.feedback = feedbackText;
     await order.save();
@@ -367,39 +280,23 @@ const softDeleteOrder = async (req, res) => {
 
     const order = await Order.findById(id);
     if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
+      return res.status(404).json({ success: false, message: "Order not found" });
     }
 
     if (order.status !== "done" && order.status !== "cancelled") {
-      return res.status(403).json({
-        success: false,
-        message:
-          "Delete can only be applied to orders with status 'done' or 'cancelled'",
-      });
+      return res.status(403).json({ success: false, message: "Delete can only be applied to orders with status 'done' or 'cancelled'" });
     }
 
     if (order.isDeleted) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Order is already deleted" });
+      return res.status(400).json({ success: false, message: "Order is already deleted" });
     }
 
     order.isDeleted = true;
     await order.save();
 
-    res.json({
-      success: true,
-      message: "Order deleted successfully",
-      order,
-    });
+    res.json({ success: true, message: "Order deleted successfully", order });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error deleting order",
-      error: error.message,
-    });
+    res.status(500).json({ success: false, message: "Error deleting order", error: error.message });
   }
 };
 

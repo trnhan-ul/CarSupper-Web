@@ -1,35 +1,40 @@
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constant";
+import { createAdminAxios } from "../utils/createInstance";
 
+const adminAxios = createAdminAxios();
+
+// Public endpoints
 export const fetchCategories = async () => {
   const res = await axios.get(`${API_BASE_URL}/categories`);
-  return res.data;
+  return Array.isArray(res.data) ? res.data : res.data?.data ?? [];
 };
 
 export const fetchCategoryDetail = async (id) => {
   const res = await axios.get(`${API_BASE_URL}/categories/${id}`);
-  return res.data;
+  return res.data?.data ?? res.data;
 };
 
+// Admin endpoints
 export const createCategory = async (category) => {
-  const res = await axios.post(`${API_BASE_URL}/categories`, category);
+  const res = await adminAxios.post(`/categories`, category);
   return res.data;
 };
 
-// Alias để code cũ dùng editCategory vẫn chạy
 export const updateCategory = async (id, category) => {
-  const res = await axios.put(`${API_BASE_URL}/categories/${id}`, category);
+  const res = await adminAxios.put(`/categories/${id}`, category);
   return res.data;
 };
+
+// Backward compatibility with old import name
 export const editCategory = updateCategory;
 
-// API đổi status category (chuẩn RESTful là PATCH)/alias cho code cũ
 export const updateCategoryStatus = async (id, status) => {
-  const res = await axios.patch(`${API_BASE_URL}/categories/${id}/status`, { status });
+  const res = await adminAxios.patch(`/categories/${id}/status`, { status });
   return res.data;
 };
 
 export const deleteCategory = async (id) => {
-  const res = await axios.delete(`${API_BASE_URL}/categories/${id}`);
+  const res = await adminAxios.delete(`/categories/${id}`);
   return res.data;
 };

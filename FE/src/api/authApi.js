@@ -10,11 +10,19 @@ export const loginUser = async (user, navigate) => {
     const res = await axios.post(`${API_BASE_URL}/auth/login`, user, {
       withCredentials: true,
     });
-    localStorage.setItem("user", JSON.stringify(res.data.data));
-    localStorage.setItem("accessToken", res.data.data.accessToken);
-    navigate(res.data.data.isAdmin ? "/admin" : "/");
+    const data = res.data.data;
+
+    if (data.isAdmin) {
+      localStorage.setItem("adminUser", JSON.stringify(data));
+      localStorage.setItem("adminAccessToken", data.accessToken);
+    } else {
+      localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("userAccessToken", data.accessToken);
+    }
+
+    navigate(data.isAdmin ? "/admin" : "/");
     toast.success(res.data.message);
-    return res.data.data;
+    return data;
   } catch (error) {
     throw error.response?.data || { message: "Login failed" };
   }
@@ -44,7 +52,7 @@ export const verifyOTPRegister = async (email, otp) => {
 
 export const getAllUsers = async () => {
   try {
-    const res = await axiosJWT.get(`/users`);
+    const res = await axiosJWT.get("/users");
     return res.data.data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to get users" };
@@ -62,9 +70,11 @@ export const deleteUser = async (id) => {
 
 export const logout = async (navigate) => {
   try {
-    await axiosJWT.post(`/auth/logout`, {});
+    await axiosJWT.post("/auth/logout", {});
     localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userAccessToken");
+    localStorage.removeItem("adminUser");
+    localStorage.removeItem("adminAccessToken");
     navigate("/");
     toast.success("Logout Successfully");
   } catch (error) {

@@ -15,12 +15,15 @@ const {
 
 const router = express.Router();
 
+// Admin
 router.get("/all", verifyToken, adminMiddleware, getAllOrders);
 router.put("/status", verifyToken, adminMiddleware, updateOrderStatusByAdmin);
+router.delete("/:id", verifyToken, adminMiddleware, softDeleteOrder);
+
+// User
+router.get("/", verifyToken, getOrdersByUser);
 router.put("/cancel", verifyToken, cancelOrderByUser);
 router.post("/", verifyToken, createOrder);
-router.get("/", verifyToken, getOrdersByUser);
 router.put("/:id/feedback", verifyToken, addOrderFeedback);
-router.delete("/:id", verifyToken, adminMiddleware, softDeleteOrder);
 
 module.exports = router;

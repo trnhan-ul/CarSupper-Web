@@ -1,57 +1,49 @@
-import axios from "axios";
-import { API_BASE_URL } from "../utils/constant";
-import { createAxios } from "../utils/createInstance";
-const axiosJWT = createAxios();
+// orderApi.js
+import { createUserAxios, createAdminAxios } from "../utils/createInstance";
 
-export const getAllOrders = async () => {
-  const res = await axiosJWT.get(`/orders`);
-  return res.data;
+const userAxios = createUserAxios();
+const adminAxios = createAdminAxios();
+
+// User scope
+export const getOrdersByUser = async () => {
+  const res = await userAxios.get(`/orders`);
+  return res.data.data;
+};
+
+export const createOrder = async (orderData) => {
+  const res = await userAxios.post(`/orders`, orderData);
+  return res.data.order;
+};
+
+export const cancelOrderByUser = async ({ orderId }) => {
+  const res = await userAxios.put(`/orders/cancel`, { orderId });
+  return res.data.order;
+};
+
+export const addFeedbackToOrder = async (orderId, feedback) => {
+  const res = await userAxios.put(`/orders/${orderId}/feedback`, { feedback });
+  return res.data.order;
+};
+
+// Admin scope
+export const getAllOrders = async (search = "") => {
+  const queryParams = new URLSearchParams();
+  if (search) queryParams.append("search", search);
+  const res = await adminAxios.get(`/orders/all?${queryParams}`);
+  return res.data.data;
 };
 
 export const getOrderDetail = async (id) => {
-  const res = await axiosJWT.get(`/orders/${id}`);
-  return res.data;
+  const res = await adminAxios.get(`/orders/${id}`);
+  return res.data.data;
 };
-export const getOrdersByUser = async (userId) => {
-  const res = await axiosJWT.get(`/orders?userId=${userId}`);
-  return res.data;
+
+export const updateOrderStatusByAdmin = async ({ orderId, status }) => {
+  const res = await adminAxios.put(`/orders/status`, { orderId, status });
+  return res.data.order;
 };
-export const createOrder = async (order) => {
-  const res = await axiosJWT.post(`/orders`, order);
-  return res.data;
-};
-export const updateOrderStatusByAdmin = async (id, status) => {
-  const res = await axiosJWT.put(`/orders/${id}`, { status });
-  return res.data;
-};
-export const cancelOrderByUser = async ({ orderId }) => {
-  try {
-    const res = await axiosJWT.put(`/orders/cancel`, {
-      orderId,
-    });
-    return res.data.order;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Failed to cancel order");
-  }
-};
-export const addFeedbackToOrder = async (orderId, feedback) => {
-  try {
-    const res = await axiosJWT.put(
-      `/orders/${orderId}/feedback`,
-      { feedback }
-    );
-    return res.data.order;
-  } catch (error) {
-    console.error("Error adding feedback:", error);
-    throw new Error(error.response?.data?.message || "Failed to add feedback");
-  }
-};
+
 export const softDeleteOrder = async (orderId) => {
-  try {
-    const res = await axiosJWT.delete(`/orders/${orderId}`);
-    return res.data.order;
-  } catch (error) {
-    console.error("Error deleting order:", error);
-    throw new Error(error.response?.data?.message || "Failed to delete order");
-  }
+  const res = await adminAxios.delete(`/orders/${orderId}`);
+  return res.data.order;
 };

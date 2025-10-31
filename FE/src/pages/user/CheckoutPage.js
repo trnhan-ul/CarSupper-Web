@@ -19,44 +19,33 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
 
   const calculateOrderDetails = () => {
-    if (!cart?.items?.length || !selectedItems) {
+    if (!cart?.items?.length) {
       return { items: [], subTotal: 0, shippingFee: 0, grandTotal: 0 };
     }
 
     let subTotal = 0;
-    let selectedCount = 0;
+    let count = 0;
     const orderItems = [];
 
     cart.items.forEach((item) => {
       const product = item.productId;
-      const price =
-        product.discountPrice !== 0 ? product.discountPrice : product.price;
+      const price = product.discountPrice !== 0 ? product.discountPrice : product.price;
 
-      item.variants.forEach((variant) => {
-        const key = `${item.productId._id}-${variant._id}`;
-        if (selectedItems[key]) {
-          subTotal += price * variant.quantity;
-          selectedCount += variant.quantity;
-          orderItems.push({
-            productId: item.productId._id,
-            variant: {
-              size: variant.size,
-              color: variant.color,
-              quantity: variant.quantity,
-            },
-          });
-        }
-      });
+      const isSelected = !selectedItems || Object.keys(selectedItems || {}).length === 0
+        ? true
+        : !!selectedItems[product._id];
+
+      if (isSelected) {
+        subTotal += price; // mỗi xe 1 chiếc
+        count += 1;
+        orderItems.push({ productId: product._id });
+      }
     });
 
     const baseShippingFee = 10;
     const discountPerItem = 2;
-    const shippingDiscount = Math.min(
-      selectedCount * discountPerItem,
-      baseShippingFee
-    );
-    const shippingFee =
-      selectedCount >= 5 ? 0 : baseShippingFee - shippingDiscount;
+    const shippingDiscount = Math.min(count * discountPerItem, baseShippingFee);
+    const shippingFee = count >= 5 ? 0 : baseShippingFee - shippingDiscount;
     const grandTotal = subTotal + shippingFee;
 
     return { items: orderItems, subTotal, shippingFee, grandTotal };
@@ -80,8 +69,8 @@ const CheckoutPage = () => {
       const userId = user?._id;
 
       const orderData = {
-        userId,
-        items,
+        userId, // hoặc để BE đọc từ token nếu bạn muốn
+        items,  // [{ productId }]
         shippingAddress: billingInfo?.address,
         note: billingInfo?.note || "",
         shippingCost: shippingFee,
@@ -96,7 +85,7 @@ const CheckoutPage = () => {
     }
   };
 
-  if (!cart || !selectedItems) {
+  if (!cart) {
     return (
       <div className="container mt-4" style={{ minHeight: 500 }}>
         <h4>🛒 Check Out</h4>
@@ -172,29 +161,13 @@ const CheckoutPage = () => {
               <li className="list-group-item">No items selected</li>
             )}
             {items.map((item, index) => {
-              const product = cart.items.find(
-                (i) => i.productId._id === item.productId
-              )?.productId;
-              const variant = cart.items
-                .find((i) => i.productId._id === item.productId)
-                ?.variants.find(
-                  (v) =>
-                    v.size === item.variant.size &&
-                    v.color === item.variant.color
-                );
+              const product = cart.items.find((i) => i.productId._id === item.productId)?.productId;
               const price =
-                product.discountPrice !== 0
-                  ? product.discountPrice
-                  : product.price;
+                product.discountPrice !== 0 ? product.discountPrice : product.price;
               return (
-                <li
-                  key={index}
-                  className="list-group-item d-flex justify-content-between"
-                >
-                  <span>
-                    {product.name} ({variant.size}, {variant.color})
-                  </span>
-                  <strong>${(price * variant.quantity).toFixed(2)}</strong>
+                <li key={index} className="list-group-item d-flex justify-content-between">
+                  <span>{product.name}</span>
+                  <strong>${price.toFixed(2)}</strong>
                 </li>
               );
             })}

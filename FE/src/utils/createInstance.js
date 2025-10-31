@@ -15,45 +15,49 @@ const refreshToken = async () => {
   }
 };
 
-export const createAxios = () => {
-  const newInstance = axios.create({
-    baseURL: API_BASE_URL,
-    withCredentials: true,
-  });
-  newInstance.interceptors.request.use(
+const createAxiosFor = ({ tokenKey, userKey }) => {
+  const instance = axios.create({ baseURL: API_BASE_URL, withCredentials: true });
+
+  instance.interceptors.request.use(
     async (config) => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      let token = localStorage.getItem("accessToken");
-      if (!token || !user) {
-        return config;
-      }
+      const storedUser = localStorage.getItem(userKey);
+      let token = localStorage.getItem(tokenKey);
+      if (!token || !storedUser) return config;
 
       try {
-        const decodedToken = jwtDecode(token);
-        const currentTime = Date.now() / 1000;
-
-        if (decodedToken.exp < currentTime) {
+        const decoded = jwtDecode(token);
+        const now = Date.now() / 1000;
+        if (decoded.exp < now) {
           const data = await refreshToken();
           if (data?.accessToken) {
-            const updatedUser = { ...user, accessToken: data.accessToken };
-            localStorage.setItem("user", JSON.stringify(updatedUser));
-            localStorage.setItem("accessToken", data.accessToken);
+            const updatedUser = { ...JSON.parse(storedUser), accessToken: data.accessToken };
+            localStorage.setItem(userKey, JSON.stringify(updatedUser));
+            localStorage.setItem(tokenKey, data.accessToken);
             token = data.accessToken;
           } else {
-            localStorage.removeItem("user");
-            localStorage.removeItem("accessToken");
+            localStorage.removeItem(userKey);
+            localStorage.removeItem(tokenKey);
             return config;
           }
         }
-
         config.headers["Authorization"] = `Bearer ${token}`;
         return config;
-      } catch (error) {
+      } catch (e) {
         return config;
       }
     },
     (error) => Promise.reject(error)
   );
 
-  return newInstance;
+  return instance;
+};
+
+export const createUserAxios = () => createAxiosFor({ tokenKey: "userAccessToken", userKey: "user" });
+export const createAdminAxios = () => createAxiosFor({ tokenKey: "adminAccessToken", userKey: "adminUser" });
+
+// Backward compatibility - use whichever is present (prefers user token)
+export const createAxios = () => {
+  const userToken = localStorage.getItem("userAccessToken");
+  const adminToken = localStorage.getItem("adminAccessToken");
+  return userToken || !adminToken ? createUserAxios() : createAdminAxios();
 };

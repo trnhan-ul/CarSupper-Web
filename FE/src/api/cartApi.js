@@ -1,51 +1,64 @@
 // cartApi.js
-import axios from "axios";
-import { API_BASE_URL } from "../utils/constant";
 import { toast } from "react-toastify";
-import { createAxios } from "../utils/createInstance";
+import { createUserAxios } from "../utils/createInstance";
 
-const axiosJWT = createAxios();
+const axiosJWT = createUserAxios();
 
-export const fetchCart = async (userId) => {
-  const res = await axiosJWT.get(`/carts/${userId}`);
-  return res.data;
-};
-
-export const addToCart = async (cart) => {
-  const res = await axiosJWT.post(`/carts`, cart);
-  return res.data;
-};
-
-export const updateCart = async (userId, cart) => {
-  const res = await axiosJWT.put(`/carts/${userId}`, cart);
-  return res.data;
-};
-
-// Alias cho xóa một sản phẩm khỏi cart
-export const deleteCartItem = async (userId, productId) => {
-  const res = await axiosJWT.delete(`/carts/${userId}/${productId}`);
-  return res.data;
-};
-export const removeFromCart = deleteCartItem;
-
-// Xóa toàn bộ cart của user (clearCart) nếu backend hỗ trợ
-export const clearCart = async (userId) => {
-  const res = await axiosJWT.delete(`/carts/${userId}`);
-  return res.data;
-};
-
-export const updateCartQuantity = async (
-  { productId, variantId, quantity },
-  userId
-) => {
+// GET /carts → lấy giỏ của user từ token
+export const fetchCart = async () => {
   try {
-    const res = await axiosJWT.put(`/carts/${userId}/quantity`, {
-      productId,
-      variantId,
-      quantity,
-    });
-    return res.data.cart; // Trả về cart đã cập nhật
+    const res = await axiosJWT.get(`/carts`);
+    return res.data.data || res.data; // hỗ trợ cả hai dạng
   } catch (error) {
-    throw error;
+    const errorMessage = error.response?.data?.message || "Failed to fetch cart.";
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+// POST /carts  body: { productId }
+export const addToCart = async ({ productId }) => {
+  try {
+    await axiosJWT.post(`/carts`, { productId });
+    const updated = await axiosJWT.get(`/carts`);
+    return updated.data.data || updated.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "Failed to add item to cart.";
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+// Không dùng quantity/variants nữa. Để tương thích, hàm này có thể bỏ hoặc để BE ignore
+export const updateCartQuantity = async () => {
+  const errorMessage = "Quantity is fixed to 1 per car in this project.";
+  toast.info(errorMessage);
+  throw new Error(errorMessage);
+};
+
+// DELETE /carts/:productId
+export const removeFromCart = async (productId) => {
+  try {
+    const res = await axiosJWT.delete(`/carts/${productId}`);
+    const updated = await axiosJWT.get(`/carts`);
+    toast.success(res.data?.message || "Item removed from cart!");
+    return updated.data.data || updated.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "Failed to remove item from cart.";
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+// DELETE /carts
+export const clearCart = async () => {
+  try {
+    const res = await axiosJWT.delete(`/carts`);
+    toast.success("Cart cleared!");
+    return res.data.data || res.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "Failed to clear cart.";
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
   }
 };

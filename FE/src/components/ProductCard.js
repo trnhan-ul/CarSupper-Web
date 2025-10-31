@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaTag } from "react-icons/fa";
 import { URL_IMG } from "../utils/constant";
-import { addToCart } from "../api/cartApi"; 
+import { addToCart } from "../api/cartApi";
 import { toast } from "react-toastify";
 
 export const ProductCard = ({ product }) => {
@@ -26,23 +26,12 @@ export const ProductCard = ({ product }) => {
       return;
     }
 
-    const availableVariant = product.variants.find((v) => v.stock > 0);
-    if (!availableVariant) {
-      toast.error("This product is out of stock.");
-      return;
-    }
-
     const cartItem = {
       productId: product._id,
-      variants: {
-        size: availableVariant.size,
-        color: availableVariant.color,
-        quantity: 1,
-      },
     };
 
     try {
-      await addToCart(cartItem, user._id);
+      await addToCart(cartItem);
       toast.success("Added to cart successfully!");
     } catch (error) {
       toast.error(error.message || "Failed to add to cart");

@@ -1,12 +1,13 @@
-import axios from "axios";
-import { API_BASE_URL } from "../utils/constant";
+import { createAdminAxios } from "../utils/createInstance";
+
+const axiosJWT = createAdminAxios();
 
 export const fetchSummary = async () => {
-  const res = await axios.get(`${API_BASE_URL}/statistics/summary`);
-  return res.data;
+  const res = await axiosJWT.get(`/statistics/summary`);
+  return res.data.summary;
 };
 
 export const fetchOrderStatus = async () => {
-  const res = await axios.get(`${API_BASE_URL}/statistics/order-status`);
-  return res.data;
+  const res = await axiosJWT.get(`/statistics/order-status`);
+  return res.data.orderStatus;
 };
