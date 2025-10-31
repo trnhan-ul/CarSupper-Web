@@ -1,47 +1,82 @@
 // userApi.js
-import axios from "axios";
 import { API_BASE_URL } from "../utils/constant";
 import { createAxios } from "../utils/createInstance";
-const axiosJWT = createAxios();
 
-export const getAllUsers = async () => {
-  const res = await axiosJWT.get(`${API_BASE_URL}/users`);
-  return res.data.data;
+export const getAllUsers = async (search = "") => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (search) queryParams.append("search", search);
+
+    const axiosJWT = createAxios();
+    const res = await axiosJWT.get(`${API_BASE_URL}/users?${queryParams}`);
+    return res.data.data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch users");
+  }
 };
 
-export const getUserDetail = async (id) => {
-  const res = await axiosJWT.get(`${API_BASE_URL}/users/${id}`);
-  return res.data;
+export const getUserById = async (userId) => {
+  try {
+    const axiosJWT = createAxios();
+    const res = await axiosJWT.get(`${API_BASE_URL}/users/${userId}`);
+    return res.data.data;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch user");
+  }
 };
 
-// Alias cho getUserDetail để code cũ vẫn chạy
-export const getUserById = getUserDetail;
-
-export const updateUser = async (id, data) => {
-  const res = await axiosJWT.put(`/users/${id}`, data, {
-    headers: {
-      "Content-Type": "multipart/form-data"
-    }
-  });
-  return res.data;
+export const updateUser = async (id, updateData) => {
+  try {
+    const axiosJWT = createAxios();
+    const res = await axiosJWT.put(`${API_BASE_URL}/users/${id}`, updateData);
+    return res.data.data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw new Error(error.response?.data?.message || "Failed to update user");
+  }
 };
 
-// Đổi trạng thái user (PATCH chỉ field status)
-export const updateStatusUser = async (id, status) => {
-  const res = await axiosJWT.patch(`${API_BASE_URL}/users/${id}/status`, { status });
-  return res.data;
+export const updateStatusUser = async (userId, { status, password }) => {
+  try {
+    const axiosJWT = createAxios();
+    const res = await axiosJWT.patch(`${API_BASE_URL}/users/${userId}/status`, {
+      status,
+      password,
+    });
+    return res.data.data;
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    throw new Error(
+      error.response?.data?.message || "Failed to update user status"
+    );
+  }
 };
 
-// Đổi mật khẩu user
-export const changePassword = async (id, oldPassword, newPassword) => {
-  const res = await axiosJWT.patch(
-    `${API_BASE_URL}/users/${id}/password`,
-    { oldPassword, newPassword }
-  );
-  return res.data;
+export const changePassword = async ({ oldPassword, newPassword, userId }) => {
+  try {
+    const axiosJWT = createAxios();
+    const res = await axiosJWT.put(`${API_BASE_URL}/users/${userId}/change-password`, {
+      oldPassword,
+      newPassword,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error changing password:", error);
+    throw new Error(
+      error.response?.data?.message || "Failed to change password"
+    );
+  }
 };
 
 export const deleteUser = async (id) => {
-  const res = await axiosJWT.delete(`${API_BASE_URL}/users/${id}`);
-  return res.data;
+  try {
+    const axiosJWT = createAxios();
+    const res = await axiosJWT.delete(`${API_BASE_URL}/users/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error(error.response?.data?.message || "Failed to delete user");
+  }
 };

@@ -122,6 +122,7 @@ const updateStatusUser = async (req, res) => {
 
   try {
     if (!status || !["active", "inactive"].includes(status)) {
+      console.log(" new status", status);
       return res.status(400).json({
         success: false,
         message: "Status must be 'active' or 'inactive'",
