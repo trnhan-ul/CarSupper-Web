@@ -39,7 +39,6 @@ const ManageProducts = () => {
     discountPrice: "",
     category: "",
     images: [],
-    variants: [{ size: "", color: "", stock: "" }],
     status: "active",
   };
 
@@ -50,18 +49,7 @@ const ManageProducts = () => {
   const [currentProductId, setCurrentProductId] = useState(null);
   const [currentStatus, setCurrentStatus] = useState("active");
 
-  const sizeOptions = ["XS", "S", "M", "L", "XL", "XXL"];
-  const colorOptions = [
-    "Black",
-    "White",
-    "Gray",
-    "Navy",
-    "Red",
-    "Blue",
-    "Yellow",
-    "Green",
-    "Pink",
-  ];
+  // Removed size/color options and variant handlers
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -115,34 +103,7 @@ const ManageProducts = () => {
     setFilteredProducts(products);
   };
 
-  const handleVariantChange = (index, field, value, isEdit = false) => {
-    const target = isEdit ? editingProduct : newProduct;
-    const setTarget = isEdit ? setEditingProduct : setNewProduct;
-
-    const updatedVariants = [...target.variants];
-    updatedVariants[index] = { ...updatedVariants[index], [field]: value };
-    setTarget({ ...target, variants: updatedVariants });
-  };
-
-  const addVariant = (isEdit = false) => {
-    const target = isEdit ? editingProduct : newProduct;
-    const setTarget = isEdit ? setEditingProduct : setNewProduct;
-
-    setTarget({
-      ...target,
-      variants: [...target.variants, { size: "", color: "", stock: "" }],
-    });
-  };
-
-  const removeVariant = (index, isEdit = false) => {
-    const target = isEdit ? editingProduct : newProduct;
-    const setTarget = isEdit ? setEditingProduct : setNewProduct;
-
-    setTarget({
-      ...target,
-      variants: target.variants.filter((_, i) => i !== index),
-    });
-  };
+  // Removed size/color options and variant handlers
 
   const handleRemoveImage = (image) => {
     setRemoveImages([...removeImages, image]);
@@ -155,8 +116,8 @@ const ManageProducts = () => {
   const handleSubmit = async (isEdit = false) => {
     const product = isEdit ? editingProduct : newProduct;
 
-    if (!product.name || !product.price || !product.variants.length) {
-      toast.error("Please fill all required fields (Name, Price, Variants)!");
+    if (!product.name || !product.price) {
+      toast.error("Please fill all required fields (Name, Price)!");
       return;
     }
 
@@ -165,21 +126,12 @@ const ManageProducts = () => {
       return;
     }
 
-    for (const variant of product.variants) {
-      if (!variant.size || !variant.color || !variant.stock) {
-        toast.error("Please fill all variant fields (Size, Color, Stock)!");
-        return;
-      }
-    }
-
     try {
       setLoading(true);
       const formData = new FormData();
 
       Object.entries(product).forEach(([key, value]) => {
-        if (key === "variants") {
-          formData.append(key, JSON.stringify(value));
-        } else if (key !== "images") {
+        if (key !== "images") {
           formData.append(key, value);
         }
       });
@@ -322,7 +274,6 @@ const ManageProducts = () => {
               <th>Price</th>
               <th style={{ width: "12%" }}>Discount Price</th>
               <th>Category</th>
-              <th>Variants</th>
               <th>Images</th>
               <th>Status</th>
               <th style={{ width: 200 }}>Actions</th>
@@ -337,13 +288,6 @@ const ManageProducts = () => {
                   {product.discountPrice ? `$${product.discountPrice}` : "-"}
                 </td>
                 <td>{product?.category?.name || product.category}</td>
-                <td>
-                  {product?.variants?.map((v, i) => (
-                    <Badge key={i} className="me-1 mb-1" bg="secondary">
-                      {v?.size}/{v?.color}: {v?.stock}
-                    </Badge>
-                  ))}
-                </td>
                 <td>
                   {product.images.map((img, i) => (
                     <img
@@ -521,85 +465,7 @@ const ManageProducts = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Variants *</Form.Label>
-              {(modalType === "create"
-                ? newProduct?.variants
-                : editingProduct?.variants || []
-              ).map((variant, index) => (
-                <Row key={index} className="mb-2">
-                  <Col md={3}>
-                    <Form.Select
-                      value={variant?.size || ""}
-                      onChange={(e) =>
-                        handleVariantChange(
-                          index,
-                          "size",
-                          e.target.value,
-                          modalType === "edit"
-                        )
-                      }
-                    >
-                      <option value="">Select Size</option>
-                      {sizeOptions.map((size) => (
-                        <option key={size} value={size}>
-                          {size}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Select
-                      value={variant?.color || ""}
-                      onChange={(e) =>
-                        handleVariantChange(
-                          index,
-                          "color",
-                          e.target.value,
-                          modalType === "edit"
-                        )
-                      }
-                    >
-                      <option value="">Select Color</option>
-                      {colorOptions.map((color) => (
-                        <option key={color} value={color}>
-                          {color}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Control
-                      type="number"
-                      placeholder="Stock"
-                      value={variant?.stock}
-                      onChange={(e) =>
-                        handleVariantChange(
-                          index,
-                          "stock",
-                          e.target.value,
-                          modalType === "edit"
-                        )
-                      }
-                    />
-                  </Col>
-                  <Col md={3}>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => removeVariant(index, modalType === "edit")}
-                    >
-                      Remove
-                    </Button>
-                  </Col>
-                </Row>
-              ))}
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => addVariant(modalType === "edit")}
-              >
-                Add Variant
-              </Button>
+              {/* Variants removed in car shop flow */}
             </Form.Group>
 
             {modalType === "edit" && (

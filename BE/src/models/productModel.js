@@ -20,35 +20,6 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     images: [{ type: String }],
-    variants: [
-      {
-        size: {
-          type: String,
-          enum: ["XS", "S", "M", "L", "XL", "XXL"],
-          required: true,
-        },
-        color: {
-          type: String,
-          enum: [
-            "Black",
-            "White",
-            "Gray",
-            "Navy",
-            "Red",
-            "Blue",
-            "Yellow",
-            "Green",
-            "Pink",
-          ],
-          required: true,
-        },
-        stock: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
-      },
-    ],
     status: {
       type: String,
       enum: ["active", "inactive"],

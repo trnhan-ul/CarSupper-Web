@@ -151,26 +151,6 @@ const createProduct = async (req, res) => { // Tên hàm đã được đổi đ
       return res.status(400).json({ success: false, message: "Invalid category ID provided or category is missing." });
     }
 
-    // 5. Variants
-    let parsedVariants;
-    try {
-      if (!variants) {
-        return res.status(400).json({ success: false, message: "Variants field is required." });
-      }
-      parsedVariants = JSON.parse(variants);
-      if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
-        return res.status(400).json({ success: false, message: "Variants must be a non-empty array." });
-      }
-      for (const variant of parsedVariants) {
-        const parsedStock = parseInt(variant.stock);
-        if (!variant.size || !variant.color || isNaN(parsedStock) || parsedStock < 0) {
-          return res.status(400).json({ success: false, message: "Each variant must have valid size, color, and non-negative stock." });
-        }
-        variant.stock = parsedStock; // Ép kiểu stock thành số
-      }
-    } catch (err) {
-      return res.status(400).json({ success: false, message: "Invalid variants format or content." });
-    }
 
     // 6. Images
     if (!images || images.length === 0) {
@@ -194,7 +174,6 @@ const createProduct = async (req, res) => { // Tên hàm đã được đổi đ
       discountPrice: parsedDiscountPrice,
       category: categoryObjectId, // <-- SỬ DỤNG CATEGORY ĐÃ ĐƯỢC ÉP KIỂU ObjectId
       images: images.map((file) => `products/${file.filename}`),
-      variants: parsedVariants,
     });
 
     console.log("Product object BEFORE save():", newProduct); // <-- XEM LOG NÀY
@@ -252,10 +231,6 @@ const updateStatusProduct = async (req, res) => {
   }
 };
 const updateProduct = async (req, res) => {
-  console.log("--- DEBUG updateProductController START ---");
-  console.log("Raw req.body:", req.body);
-  console.log("Raw req.params.id:", req.params.id);
-  console.log("Raw req.files:", req.files);
 
   try {
     const {
@@ -265,7 +240,6 @@ const updateProduct = async (req, res) => {
       discountPrice,
       category,
       removeImages,
-      variants,
     } = req.body;
 
     const productId = req.params.id;
@@ -274,53 +248,33 @@ const updateProduct = async (req, res) => {
     // --- ÉP KIỂU VÀ KIỂM TRA DỮ LIỆU ĐẦU VÀO CẨN THẬN (TƯƠNG TỰ CREATE) ---
     // 1. Name
     if (!name || typeof name !== 'string' || name.trim() === '') {
-        return res.status(400).json({ success: false, message: "Product name is required and cannot be empty." });
+      return res.status(400).json({ success: false, message: "Product name is required and cannot be empty." });
     }
 
     // 2. Price
     const parsedPrice = parseFloat(price);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
-        return res.status(400).json({ success: false, message: "Price must be a positive number." });
+      return res.status(400).json({ success: false, message: "Price must be a positive number." });
     }
 
     // 3. Discount Price (Optional)
     const parsedDiscountPrice = discountPrice ? parseFloat(discountPrice) : 0;
     if (isNaN(parsedDiscountPrice) || parsedDiscountPrice < 0) {
-        return res.status(400).json({ success: false, message: "Discount price must be a non-negative number." });
+      return res.status(400).json({ success: false, message: "Discount price must be a non-negative number." });
     }
     if (parsedDiscountPrice >= parsedPrice) {
-        return res.status(400).json({ success: false, message: "Discount price must be less than the regular price." });
+      return res.status(400).json({ success: false, message: "Discount price must be less than the regular price." });
     }
 
     // 4. Category
     let categoryObjectId;
     if (category && mongoose.Types.ObjectId.isValid(category)) {
-        categoryObjectId = new mongoose.Types.ObjectId(category);
+      categoryObjectId = new mongoose.Types.ObjectId(category);
     } else {
-        return res.status(400).json({ success: false, message: "Invalid category ID provided or category is missing." });
+      return res.status(400).json({ success: false, message: "Invalid category ID provided or category is missing." });
     }
 
-    // 5. Variants
-    let parsedVariants;
-    try {
-        if (!variants) {
-           return res.status(400).json({ success: false, message: "Variants field is required." });
-        }
-        parsedVariants = JSON.parse(variants);
-        if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
-            return res.status(400).json({ success: false, message: "Variants must be a non-empty array." });
-        }
-        for (const variant of parsedVariants) {
-            const parsedStock = parseInt(variant.stock);
-            if (!variant.size || !variant.color || isNaN(parsedStock) || parsedStock < 0) {
-                return res.status(400).json({ success: false, message: "Each variant must have valid size, color, and non-negative stock." });
-            }
-            variant.stock = parsedStock;
-        }
-    } catch (err) {
-        return res.status(400).json({ success: false, message: "Invalid variants format or content." });
-    }
-    // --- KẾT THÚC ÉP KIỂU VÀ KIỂM TRA ---
+    // 5. Variants removed in car shop flow
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -367,8 +321,8 @@ const updateProduct = async (req, res) => {
     }
     // Kiểm tra nếu không còn ảnh nào
     if (product.images.length === 0 && (images && images.length === 0) && (!removeImages || JSON.parse(removeImages).length === product.images.length)) {
-        // Tùy chọn: Nếu product schema của bạn yêu cầu ít nhất 1 ảnh, bạn cần validate ở đây.
-        // Ví dụ: return res.status(400).json({ success: false, message: "Product must have at least one image." });
+      // Tùy chọn: Nếu product schema của bạn yêu cầu ít nhất 1 ảnh, bạn cần validate ở đây.
+      // Ví dụ: return res.status(400).json({ success: false, message: "Product must have at least one image." });
     }
 
 
@@ -376,7 +330,6 @@ const updateProduct = async (req, res) => {
     product.price = parsedPrice;
     product.description = description;
     product.category = categoryObjectId; // <-- SỬ DỤNG CATEGORY ĐÃ ÉP KIỂU
-    product.variants = parsedVariants;
     product.discountPrice = parsedDiscountPrice;
 
     console.log("Product object BEFORE save():", product); // <-- XEM LOG NÀY
@@ -390,8 +343,8 @@ const updateProduct = async (req, res) => {
   } catch (error) {
     console.error("Update Product Error:", error);
     if (error.name === 'ValidationError') {
-        const messages = Object.values(error.errors).map(val => val.message);
-        return res.status(400).json({ success: false, message: `Product validation failed: ${messages.join(', ')}` });
+      const messages = Object.values(error.errors).map(val => val.message);
+      return res.status(400).json({ success: false, message: `Product validation failed: ${messages.join(', ')}` });
     }
     res.status(500).json({ success: false, message: "Internal server error during product update", error: error.message });
   } finally {
