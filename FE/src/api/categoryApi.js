@@ -23,7 +23,6 @@ export const updateCategory = async (id, category) => {
   const res = await axiosJWT.put(`${API_BASE_URL}/categories/${id}`, category);
   return res.data;
 };
-export const editCategory = updateCategory;
 
 // API đổi status category (chuẩn RESTful là PATCH)/alias cho code cũ
 export const updateCategoryStatus = async (id, status) => {

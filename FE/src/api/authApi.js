@@ -44,7 +44,7 @@ export const verifyOTPRegister = async (email, otp) => {
 
 export const getAllUsers = async () => {
   try {
-    const res = await axiosJWT.get(`/users`);
+    const res = await axiosJWT.get("/users");
     return res.data.data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to get users" };
@@ -62,7 +62,7 @@ export const deleteUser = async (id) => {
 
 export const logout = async (navigate) => {
   try {
-    await axiosJWT.post(`/auth/logout`, {});
+    await axiosJWT.post("/auth/logout", {});
     localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
     navigate("/");
