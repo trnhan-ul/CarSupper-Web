@@ -1,6 +1,84 @@
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 
+// New simple controllers for car shop flow
+const getMyCart = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const cart = await Cart.findOne({ userId }).populate("items.productId");
+    return res.json({ success: true, data: cart || { userId, items: [], totalAmount: 0 } });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const addToCartSimple = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { productId } = req.body;
+    if (!productId) {
+      return res.status(400).json({ success: false, message: "productId is required" });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    let cart = await Cart.findOne({ userId });
+    if (!cart) cart = await Cart.create({ userId, items: [] });
+
+    const exists = cart.items.find(
+      (i) => i.productId.toString() === productId.toString()
+    );
+
+    if (!exists) {
+      // quantity cố định = 1
+      cart.items.push({ productId, quantity: 1 });
+      await cart.save();
+    }
+
+    const populated = await Cart.findById(cart._id).populate("items.productId");
+    return res.json({ success: true, data: populated, message: "Item added to cart" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const removeCartItemSimple = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { productId } = req.params;
+
+    const cart = await Cart.findOne({ userId });
+    if (!cart) return res.json({ success: true, data: { items: [] } });
+
+    cart.items = cart.items.filter(
+      (i) => i.productId.toString() !== productId.toString()
+    );
+    await cart.save();
+
+    const populated = await Cart.findById(cart._id).populate("items.productId");
+    return res.json({ success: true, data: populated, message: "Removed item from cart" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const clearMyCart = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const cart = await Cart.findOne({ userId });
+    if (!cart) return res.json({ success: true, data: { items: [] } });
+    cart.items = [];
+    await cart.save();
+    return res.json({ success: true, data: cart, message: "Cart cleared" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Legacy controllers (kept for reference)
 const getCartByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -226,10 +304,7 @@ const removeCartItem = async (req, res) => {
 
     await cart.save();
 
-    res.json({
-      success: true,
-      message: "Removed item from cart successfully",
-    });
+    res.json({ success: true, message: "Removed item from cart successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -256,6 +331,12 @@ const clearCart = async (req, res) => {
 };
 
 module.exports = {
+  // new
+  getMyCart,
+  addToCartSimple,
+  removeCartItemSimple,
+  clearMyCart,
+  // legacy (not used by new routes)
   getCartByUserId,
   addToCart,
   updateCartItem,

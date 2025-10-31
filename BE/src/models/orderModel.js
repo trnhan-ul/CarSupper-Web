@@ -14,29 +14,10 @@ const orderSchema = new mongoose.Schema(
           ref: "Product",
           required: true,
         },
-        variant: [
-          {
-            size: { type: String, required: true },
-            color: { type: String, required: true },
-            quantity: {
-              type: Number,
-              required: true,
-              min: 1,
-            },
-            price: {
-              type: Number,
-              required: true,
-              min: 0,
-            },
-          },
-        ],
+        price: { type: Number, required: true, min: 0 }, // chốt giá tại thời điểm đặt
       },
     ],
-    totalAmount: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
+    totalAmount: { type: Number, required: true, min: 0 },
     shippingAddress: { type: String, required: true },
     note: { type: String },
     status: {
@@ -45,15 +26,8 @@ const orderSchema = new mongoose.Schema(
       default: "pending",
     },
     feedback: { type: String, default: "" },
-    shippingCost: {
-      type: Number,
-      min: 0,
-      default: 0,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
+    shippingCost: { type: Number, min: 0, default: 0 },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
