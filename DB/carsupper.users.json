@@ -110,7 +110,7 @@
         },
         "fullName": "CarSuper Admin",
         "email": "admin@gmail.com",
-        "password": "$2b$10$YAlstVI4B69AKy6vGPzvdONJx/QyDRc1SjGRrAn.DdtkfrgUfKwu.",
+        "password": "$2a$10$LakkdaqL.x8LP234Xh0dquK28pvJiRqJw1yJ2BcHSec9YaZIHNJgS",
         "isAdmin": true,
         "avatar": "avatars/admin-avatar-2.jpg",
         "gender": "male",
