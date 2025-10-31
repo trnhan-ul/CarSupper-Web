@@ -71,8 +71,12 @@ const ManageProducts = () => {
         fetchCategories("active"),
       ]);
 
-      setProducts(productsResponse);
-      setFilteredProducts(productsResponse);
+      const list = Array.isArray(productsResponse)
+        ? productsResponse
+        : productsResponse?.products || productsResponse?.data || [];
+
+      setProducts(list);
+      setFilteredProducts(list);
       setCategories(categoriesResponse.data || categoriesResponse);
     } catch (error) {
       toast.error("Failed to load data: " + error.message);
