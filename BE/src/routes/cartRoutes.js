@@ -1,18 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken, canModifyUser } = require("../middleware/authMiddleware");
+const { verifyToken } = require("../middleware/authMiddleware");
 const {
-  getCartByUserId,
-  addToCart,
-  updateCartItem,
-  removeCartItem,
-  clearCart,
+  getMyCart,
+  addToCartSimple,
+  removeCartItemSimple,
+  clearMyCart,
 } = require("../controllers/cartController");
 
-router.get("/:userId", verifyToken, canModifyUser, getCartByUserId);
-router.post("/:userId", verifyToken, canModifyUser, addToCart);
-router.put("/:userId", verifyToken, canModifyUser, updateCartItem);
-router.delete("/:userId", verifyToken, canModifyUser, removeCartItem);
-router.delete("/clear/:userId", verifyToken, canModifyUser, clearCart);
+// Lấy giỏ hàng của user đăng nhập
+router.get("/", verifyToken, getMyCart);
+
+// Thêm xe vào giỏ: body { productId }
+router.post("/", verifyToken, addToCartSimple);
+
+// Xóa 1 xe theo productId
+router.delete("/:productId", verifyToken, removeCartItemSimple);
+
+// Xóa sạch giỏ hàng
+router.delete("/", verifyToken, clearMyCart);
 
 module.exports = router;
