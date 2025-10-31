@@ -41,7 +41,7 @@ export const updateUser = async (id, updateData) => {
 export const updateStatusUser = async (userId, { status, password }) => {
   try {
     const axiosJWT = createAxios();
-    const res = await axiosJWT.put(`${API_BASE_URL}/users/${userId}/status`, {
+    const res = await axiosJWT.patch(`${API_BASE_URL}/users/${userId}/status`, {
       status,
       password,
     });
