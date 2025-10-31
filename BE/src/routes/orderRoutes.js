@@ -17,7 +17,7 @@ const router = express.Router();
 
 // Admin
 router.get("/all", verifyToken, adminMiddleware, getAllOrders);
-router.put("/status", verifyToken, adminMiddleware, updateOrderStatusByAdmin);
+router.patch("/status", verifyToken, adminMiddleware, updateOrderStatusByAdmin);
 router.delete("/:id", verifyToken, adminMiddleware, softDeleteOrder);
 
 // User
