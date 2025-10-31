@@ -24,13 +24,13 @@ import { URL_IMG } from "../../utils/constant";
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]); 
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showStatusModal, setShowStatusModal] = useState(false); 
+  const [showStatusModal, setShowStatusModal] = useState(false);
   const [modalType, setModalType] = useState("create");
-  const [searchQuery, setSearchQuery] = useState(""); 
+  const [searchQuery, setSearchQuery] = useState("");
 
   const initialProductState = {
     name: "",
@@ -67,12 +67,12 @@ const ManageProducts = () => {
     setLoading(true);
     try {
       const [productsResponse, categoriesResponse] = await Promise.all([
-        fetchProducts({ limit: 100 }),
+        fetchProducts(),
         fetchCategories("active"),
       ]);
 
-      setProducts(productsResponse.products);
-      setFilteredProducts(productsResponse.products); 
+      setProducts(productsResponse);
+      setFilteredProducts(productsResponse);
       setCategories(categoriesResponse.data || categoriesResponse);
     } catch (error) {
       toast.error("Failed to load data: " + error.message);
@@ -88,7 +88,7 @@ const ManageProducts = () => {
   const handleSearch = () => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) {
-      setFilteredProducts(products); 
+      setFilteredProducts(products);
       return;
     }
 
@@ -431,9 +431,9 @@ const ManageProducts = () => {
                       modalType === "create"
                         ? setNewProduct({ ...newProduct, category: value })
                         : setEditingProduct({
-                            ...editingProduct,
-                            category: value,
-                          });
+                          ...editingProduct,
+                          category: value,
+                        });
                     }}
                   >
                     <option value="">Select Category</option>
@@ -463,9 +463,9 @@ const ManageProducts = () => {
                       modalType === "create"
                         ? setNewProduct({ ...newProduct, price: value })
                         : setEditingProduct({
-                            ...editingProduct,
-                            price: value,
-                          });
+                          ...editingProduct,
+                          price: value,
+                        });
                     }}
                   />
                 </Form.Group>
@@ -485,9 +485,9 @@ const ManageProducts = () => {
                       modalType === "create"
                         ? setNewProduct({ ...newProduct, discountPrice: value })
                         : setEditingProduct({
-                            ...editingProduct,
-                            discountPrice: value,
-                          });
+                          ...editingProduct,
+                          discountPrice: value,
+                        });
                     }}
                   />
                 </Form.Group>
@@ -509,9 +509,9 @@ const ManageProducts = () => {
                   modalType === "create"
                     ? setNewProduct({ ...newProduct, description: value })
                     : setEditingProduct({
-                        ...editingProduct,
-                        description: value,
-                      });
+                      ...editingProduct,
+                      description: value,
+                    });
                 }}
               />
             </Form.Group>
