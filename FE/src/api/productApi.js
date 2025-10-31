@@ -14,6 +14,7 @@ export const fetchProductDetail = async (id) => {
 };
 
 export const createProduct = async (product) => {
+  console.log("Received createProduct request with body:", product);
   const res = await axiosJWT.post(`${API_BASE_URL}/products`, product);
   return res.data;
 };

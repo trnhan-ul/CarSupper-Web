@@ -4,25 +4,28 @@ import { createAxios } from "../utils/createInstance";
 const axiosJWT = createAxios();
 
 export const getAllOrders = async () => {
-  const res = await axiosJWT.get(`/orders`);
-  return res.data;
+  const res = await axiosJWT.get(`/orders/all`);
+  return res.data.data;
 };
 
 export const getOrderDetail = async (id) => {
   const res = await axiosJWT.get(`/orders/${id}`);
-  return res.data;
+  return res.data.data;
 };
 export const getOrdersByUser = async (userId) => {
   const res = await axiosJWT.get(`/orders?userId=${userId}`);
-  return res.data;
+  return res.data.data;
 };
 export const createOrder = async (order) => {
   const res = await axiosJWT.post(`/orders`, order);
-  return res.data;
+  return res.data.order;
 };
-export const updateOrderStatusByAdmin = async (id, status) => {
-  const res = await axiosJWT.put(`/orders/${id}`, { status });
-  return res.data;
+export const updateOrderStatusByAdmin = async (orderId, payload) => {
+  const res = await axiosJWT.put(`${API_BASE_URL}/orders/status`, {
+        orderId,
+        status: payload.status
+      });
+  return res.data.order;
 };
 export const cancelOrderByUser = async ({ orderId }) => {
   try {
