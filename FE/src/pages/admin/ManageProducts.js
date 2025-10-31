@@ -85,7 +85,7 @@ const ManageProducts = () => {
     loadData();
   }, [loadData]);
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) {
       setFilteredProducts(products);
@@ -96,7 +96,7 @@ const ManageProducts = () => {
       product.name.toLowerCase().includes(query)
     );
     setFilteredProducts(filtered);
-  };
+  }, [searchQuery, products]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -104,7 +104,7 @@ const ManageProducts = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [searchQuery, products]);
+  }, [handleSearch]);
 
   const handleResetSearch = () => {
     setSearchQuery("");

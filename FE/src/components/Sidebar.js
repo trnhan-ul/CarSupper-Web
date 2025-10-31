@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { fetchCategories } from "../api/categoryApi";
 
 const Sidebar = ({
-  selectedGender,
-  setSelectedGender,
   selectedCategory,
   setSelectedCategory,
   setMinPrice,
@@ -18,8 +16,7 @@ const Sidebar = ({
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
-        const status = "active";
-        const categoryData = await fetchCategories(status);
+        const categoryData = await fetchCategories();
         setCategories(categoryData);
         setIsFetching(false);
       } catch (error) {
@@ -40,40 +37,6 @@ const Sidebar = ({
     <div className="col-md-3">
       <div className="card mb-4">
         <div className="card-body">
-          <h5 className="card-title text-center">Choose Gender</h5>
-          <div className="d-flex gap-2">
-            <button
-              className={`btn ${
-                selectedGender === "" ? "btn-primary" : "btn-outline-primary"
-              } w-100`}
-              onClick={() => setSelectedGender("")}
-            >
-              All
-            </button>
-            <button
-              className={`btn ${
-                selectedGender === "Men" ? "btn-primary" : "btn-outline-primary"
-              } w-100`}
-              onClick={() => setSelectedGender("Men")}
-            >
-              Men
-            </button>
-            <button
-              className={`btn ${
-                selectedGender === "Women"
-                  ? "btn-primary"
-                  : "btn-outline-primary"
-              } w-100`}
-              onClick={() => setSelectedGender("Women")}
-            >
-              Women
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="card mb-4">
-        <div className="card-body">
           <h5 className="card-title text-center">Shop By Categories</h5>
           {isFetching ? (
             <p>Loading categories...</p>
@@ -81,11 +44,10 @@ const Sidebar = ({
             <div className="row">
               <div className="col-6 mb-2">
                 <button
-                  className={`btn ${
-                    selectedCategory === ""
-                      ? "btn-primary"
-                      : "btn-outline-primary"
-                  } w-100`}
+                  className={`btn ${selectedCategory === ""
+                    ? "btn-primary"
+                    : "btn-outline-primary"
+                    } w-100`}
                   onClick={() => setSelectedCategory("")}
                 >
                   All
@@ -96,11 +58,10 @@ const Sidebar = ({
                 ?.map((category) => (
                   <div key={category._id} className="col-6 mb-2">
                     <button
-                      className={`btn ${
-                        selectedCategory === category.name
-                          ? "btn-primary"
-                          : "btn-outline-primary"
-                      } w-100`}
+                      className={`btn ${selectedCategory === category.name
+                        ? "btn-primary"
+                        : "btn-outline-primary"
+                        } w-100`}
                       onClick={() => setSelectedCategory(category.name)}
                     >
                       {category.name}

@@ -1,8 +1,8 @@
 // cartApi.js
 import { toast } from "react-toastify";
-import { createAxios } from "../utils/createInstance";
+import { createUserAxios } from "../utils/createInstance";
 
-const axiosJWT = createAxios();
+const axiosJWT = createUserAxios();
 
 // GET /carts → lấy giỏ của user từ token
 export const fetchCart = async () => {

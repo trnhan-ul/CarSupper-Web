@@ -14,7 +14,6 @@ const OurStore = () => {
     totalPages: 1,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedGender, setSelectedGender] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -23,7 +22,7 @@ const OurStore = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedGender, selectedCategory, minPrice, maxPrice, searchTerm]);
+  }, [selectedCategory, minPrice, maxPrice, searchTerm]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,7 +35,6 @@ const OurStore = () => {
         page: currentPage,
         limit: 9,
       });
-      if (selectedGender) queryParams.append("gender", selectedGender);
       if (selectedCategory) queryParams.append("category", selectedCategory);
       if (minPrice) queryParams.append("minPrice", minPrice);
       if (maxPrice) queryParams.append("maxPrice", maxPrice);
@@ -62,7 +60,7 @@ const OurStore = () => {
     } finally {
       setIsFetching(false);
     }
-  }, [currentPage, selectedGender, selectedCategory, minPrice, maxPrice, searchTerm]);
+  }, [currentPage, selectedCategory, minPrice, maxPrice, searchTerm]);
 
   useEffect(() => {
     fetchProducts();
@@ -86,8 +84,6 @@ const OurStore = () => {
       </div>
       <div className="d-flex mb-3">
         <Sidebar
-          selectedGender={selectedGender}
-          setSelectedGender={setSelectedGender}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           setMinPrice={setMinPrice}

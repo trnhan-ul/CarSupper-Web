@@ -52,6 +52,16 @@ const adminMiddleware = (req, res, next) => {
   next();
 };
 
+const customerOnly = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+  if (req.user.isAdmin) {
+    return res.status(403).json({ success: false, message: "Customers only." });
+  }
+  next();
+};
+
 const canModifyUser = (req, res, next) => {
   if (!req.user) {
     return res.status(403).json({
@@ -70,4 +80,4 @@ const canModifyUser = (req, res, next) => {
   });
 };
 
-module.exports = { verifyToken, adminMiddleware, canModifyUser };
+module.exports = { verifyToken, adminMiddleware, canModifyUser, customerOnly };

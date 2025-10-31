@@ -13,6 +13,7 @@ const {
 const router = express.Router();
 
 router.get("/all", getAllCategories);
+router.get("/", getAllCategories);
 router.post("/", verifyToken, adminMiddleware, createCategory);
 router.put("/:id/status", verifyToken, adminMiddleware, updateCategoryStatus);
 router.put("/:id", verifyToken, adminMiddleware, updateCategory);

@@ -5,7 +5,7 @@
         },
         "fullName": "Nguyen Van Minh",
         "email": "minhnv@carsupper.com",
-        "password": "$2b$10$t0RucSWInlFrhTp8LALNdeGbcnk19TiKxmEqhsUvrkg1TyNyl/OIe",
+        "password": "$2b$10$0JNKimZOb9.TFFA21KtFf.FE1.rrzH3/A2KPSs6X5YGXoIzqtZVo6",
         "isAdmin": true,
         "avatar": "avatars/admin-avatar.jpg",
         "gender": "male",
@@ -110,7 +110,7 @@
         },
         "fullName": "CarSuper Admin",
         "email": "admin@gmail.com",
-        "password": "$2b$10$YAlstVI4B69AKy6vGPzvdONJx/QyDRc1SjGRrAn.DdtkfrgUfKwu.",
+        "password": "$2b$10$0JNKimZOb9.TFFA21KtFf.FE1.rrzH3/A2KPSs6X5YGXoIzqtZVo6",
         "isAdmin": true,
         "avatar": "avatars/admin-avatar-2.jpg",
         "gender": "male",
@@ -122,6 +122,27 @@
         },
         "updatedAt": {
             "$date": "2025-03-16T17:23:44.627Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67e000000000000000000001"
+        },
+        "fullName": "Super Admin",
+        "email": "superadmin@carsupper.com",
+        "password": "$2b$10$1KepM6QB9DtwVyTaISHHKOV0ULHs0qjdmIj6j1RCrYZ7BacRy10r2",
+        "isAdmin": true,
+        "avatar": "avatars/admin-avatar-2.jpg",
+        "gender": "male",
+        "phone": "0999999999",
+        "address": "CarSuper Headquarters, Vietnam",
+        "status": "active",
+        "createdAt": {
+            "$date": "2025-06-05T03:00:00.000Z"
+        },
+        "updatedAt": {
+            "$date": "2025-06-05T03:00:00.000Z"
         },
         "__v": 0
     }
