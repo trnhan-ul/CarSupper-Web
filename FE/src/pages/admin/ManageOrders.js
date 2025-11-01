@@ -83,10 +83,10 @@ const ManageOrders = () => {
 
     setLoading(true);
     try {
-      const updatedOrder = await updateOrderStatusByAdmin(
-        selectedOrderId, // <-- Tham số THỨ NHẤT: là chuỗi ID
-        { status: currentStatus } // <-- Tham số THỨ HAI: là đối tượng payload
-      );
+      const updatedOrder = await updateOrderStatusByAdmin({
+        orderId: selectedOrderId,
+        status: currentStatus,
+      });
       setOrders(
         orders.map((order) =>
           order._id === selectedOrderId ? updatedOrder : order
