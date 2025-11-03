@@ -136,75 +136,15 @@ const updateOrderStatusByAdmin = async (req, res) => {
       });
     }
 
-    let updatedOrder; // Biến để lưu trữ kết quả cập nhật
-
-    if (status === "cancelled") {
-      // Khi hủy đơn hàng, cần thực hiện logic trả lại stock
-      // Logic này yêu cầu truy cập order.items, vì vậy không thể dùng findByIdAndUpdate trực tiếp ngay lúc này
-      // Sau khi xử lý stock, bạn cần cập nhật và lưu lại đối tượng order.
-      // Tuy nhiên, lỗi validation xuất phát từ `order.save()`.
-      // Để giải quyết, chúng ta sẽ cố gắng chỉnh sửa order.items nếu nó thiếu trường size
-      // Hoặc cách đơn giản nhất là cập nhật status sau khi xử lý stock,
-      // và sau đó có thể chỉ dùng updateById để thay đổi trạng thái nếu không muốn validation đầy đủ.
-
-      for (const orderItem of order.items) {
-        // Kiểm tra an toàn trước khi truy cập
-        const requestedVariant = orderItem.variant && orderItem.variant.length > 0 ? orderItem.variant[0] : null;
-
-        if (!requestedVariant || !requestedVariant.size || !requestedVariant.color || !requestedVariant.quantity) {
-          // Đây là lúc bạn phát hiện dữ liệu đơn hàng cũ bị lỗi.
-          // Bạn có thể chọn:
-          // 1. Ném lỗi rõ ràng để sửa đơn hàng cũ.
-          // 2. Cung cấp một giá trị mặc định nếu trường đó thiếu (nếu logic cho phép).
-          // 3. Hoặc bỏ qua logic hoàn trả stock nếu item bị lỗi.
-
-          // Đối với mục đích này, chúng ta sẽ ném lỗi để người dùng biết có đơn hàng lỗi.
-          console.error(`Validation Error: Order ${orderId} has an item missing required variant fields: ${JSON.stringify(orderItem)}`);
-          return res.status(400).json({ message: `Order validation failed for item variant: size/color/quantity is required. Please check order ${orderId} data.`, error: `Missing variant fields in order item for product ${orderItem.productId}` });
-          // Nếu bạn KHÔNG muốn ném lỗi mà muốn cố gắng tiếp tục, bạn phải bỏ qua item này hoặc gán giá trị mặc định.
-        }
-
-        const product = await Product.findById(orderItem.productId); // Dùng orderItem.productId, không phải productId biến mới
-        if (!product) {
-          throw new Error(`Product with ID ${orderItem.productId} not found`);
-        }
-
-        const productVariant = product.variants.find(
-          (v) =>
-            v.size === requestedVariant.size &&
-            v.color === requestedVariant.color
-        );
-        if (!productVariant) {
-          throw new Error(
-            `Variant (size: ${requestedVariant.size}, color: ${requestedVariant.color}) not found in product ${orderItem.productId}`
-          );
-        }
-
-        productVariant.stock += requestedVariant.quantity;
-        await product.save(); // Lưu product đã cập nhật stock
-      }
-
-      // Sau khi xử lý hoàn trả stock, cập nhật trạng thái đơn hàng
-      // Dùng findByIdAndUpdate cho chính xác hơn và có thể bỏ qua validation của các trường khác
-      updatedOrder = await Order.findByIdAndUpdate(
-        orderId, // ID của đơn hàng
-        { status: status }, // Chỉ cập nhật trường status
-        { new: true, runValidators: true } // `new: true` để trả về document đã cập nhật, `runValidators: true` để chạy validation trên trường `status`
-      );
-      if (!updatedOrder) {
-        return res.status(404).json({ message: "Order not found after update" });
-      }
-
-    } else {
-      // Đối với các trạng thái khác, chỉ cần cập nhật trạng thái trực tiếp
-      updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        { status: status },
-        { new: true, runValidators: true }
-      );
-      if (!updatedOrder) {
-        return res.status(404).json({ message: "Order not found after update" });
-      }
+    // Cập nhật trạng thái đơn hàng
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { status: status },
+      { new: true, runValidators: true }
+    );
+    
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found after update" });
     }
 
     return res.status(200).json({ message: "Order status updated successfully", order: updatedOrder });
