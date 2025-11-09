@@ -7,7 +7,7 @@ require("dotenv").config();
 const path = require("path");
 
 // Load environment variables
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 const DATABASE_URL = process.env.DATABASE_URL;
 
 // Initialize Express app
@@ -47,6 +47,7 @@ app.listen(PORT, async () => {
   try {
     await connectDB(DATABASE_URL);
     console.log(`Server is running on port ${PORT}`);
+    console.log(`Swagger documentation is available at http://localhost:${PORT}/api-docs`);
   } catch (error) {
     console.error("Server failed to start:", error);
   }
