@@ -124,7 +124,7 @@ const updateOrderStatusByAdmin = async (req, res) => {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
-    let order = await Order.findById(orderId); // Dùng `let` để có thể gán lại
+    let order = await Order.findById(orderId);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -136,20 +136,36 @@ const updateOrderStatusByAdmin = async (req, res) => {
       });
     }
 
+    const oldStatus = order.status;
+
     // Cập nhật trạng thái đơn hàng
     const updatedOrder = await Order.findByIdAndUpdate(
       orderId,
       { status: status },
       { new: true, runValidators: true }
     );
-    
+
     if (!updatedOrder) {
       return res.status(404).json({ message: "Order not found after update" });
     }
 
-    return res.status(200).json({ message: "Order status updated successfully", order: updatedOrder });
+    // Nếu status chuyển sang "done", tăng soldCount cho các products
+    if (status === "done" && oldStatus !== "done") {
+      for (const item of updatedOrder.items) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { soldCount: 1 },
+        });
+      }
+    }
+
+    return res
+      .status(200)
+      .json({
+        message: "Order status updated successfully",
+        order: updatedOrder,
+      });
   } catch (error) {
-    console.error("Error updating order status:", error); // Log lỗi chi tiết ở backend
+    console.error("Error updating order status:", error);
     return res.status(500).json({
       message: "Error updating order status",
       error: error.message,
@@ -171,15 +187,23 @@ const cancelOrderByUser = async (req, res) => {
     }
 
     if (order.status !== "pending") {
-      return res.status(403).json({ message: "Only orders in pending status can be cancelled by users" });
+      return res
+        .status(403)
+        .json({
+          message: "Only orders in pending status can be cancelled by users",
+        });
     }
 
     order.status = "cancelled";
     await order.save();
 
-    return res.status(200).json({ message: "Order successfully cancelled", order });
+    return res
+      .status(200)
+      .json({ message: "Order successfully cancelled", order });
   } catch (error) {
-    return res.status(500).json({ message: "Error cancelling order", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error cancelling order", error: error.message });
   }
 };
 
@@ -190,20 +214,30 @@ const addOrderFeedback = async (req, res) => {
 
     const order = await Order.findById(id);
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
     if (order.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ success: false, message: "Not authorized to add feedback" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Not authorized to add feedback" });
     }
 
     if (order.status !== "done") {
-      return res.status(403).json({ success: false, message: "Feedback can only be added to orders with status 'done'" });
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Feedback can only be added to orders with status 'done'",
+        });
     }
 
     let feedbackText = "";
     if (typeof feedback === "string") feedbackText = feedback;
-    else if (feedback && typeof feedback === "object" && feedback.feedback) feedbackText = feedback.feedback;
+    else if (feedback && typeof feedback === "object" && feedback.feedback)
+      feedbackText = feedback.feedback;
 
     order.feedback = feedbackText;
     await order.save();
@@ -220,15 +254,25 @@ const softDeleteOrder = async (req, res) => {
 
     const order = await Order.findById(id);
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
     if (order.status !== "done" && order.status !== "cancelled") {
-      return res.status(403).json({ success: false, message: "Delete can only be applied to orders with status 'done' or 'cancelled'" });
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message:
+            "Delete can only be applied to orders with status 'done' or 'cancelled'",
+        });
     }
 
     if (order.isDeleted) {
-      return res.status(400).json({ success: false, message: "Order is already deleted" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Order is already deleted" });
     }
 
     order.isDeleted = true;
@@ -236,7 +280,54 @@ const softDeleteOrder = async (req, res) => {
 
     res.json({ success: true, message: "Order deleted successfully", order });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error deleting order", error: error.message });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error deleting order",
+        error: error.message,
+      });
+  }
+};
+
+const getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ObjectId format
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid order ID format" });
+    }
+
+    const order = await Order.findById(id)
+      .populate("userId", "fullName email phone address")
+      .populate("items.productId", "name price discountPrice images category")
+      .lean();
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    // Nếu là user thường, chỉ cho xem order của chính mình
+    if (req.user && !req.user.isAdmin) {
+      if (order.userId._id.toString() !== req.user._id.toString()) {
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied" });
+      }
+    }
+
+    res.json({ success: true, data: order });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching order",
+      error: error.message,
+    });
   }
 };
 
@@ -248,4 +339,5 @@ module.exports = {
   getAllOrders,
   softDeleteOrder,
   cancelOrderByUser,
+  getOrderById,
 };

@@ -11,6 +11,7 @@ const {
   getOrdersByUser,
   getAllOrders,
   softDeleteOrder,
+  getOrderById,
 } = require("../controllers/orderController");
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.delete("/:id", verifyToken, adminMiddleware, softDeleteOrder);
 
 // User
 router.get("/", verifyToken, getOrdersByUser);
+router.get("/:id", verifyToken, getOrderById); // Route mới
 router.put("/cancel", verifyToken, cancelOrderByUser);
 router.post("/", verifyToken, createOrder);
 router.put("/:id/feedback", verifyToken, addOrderFeedback);

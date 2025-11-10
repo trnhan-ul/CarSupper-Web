@@ -7,12 +7,23 @@ const {
   createProduct,
   updateProduct,
   updateStatusProduct,
+  advancedSearch,
+  getTrendingProducts,
+  getPopularProducts,
+  getLatestProducts,
 } = require("../controllers/productController");
 const {
   verifyToken,
   adminMiddleware,
 } = require("../middleware/authMiddleware");
 
+// Advanced search and filter routes (phải đặt trước routes với :id)
+router.get("/search/advanced", advancedSearch);
+router.get("/search/trending", getTrendingProducts);
+router.get("/search/popular", getPopularProducts);
+router.get("/search/latest", getLatestProducts);
+
+// Basic routes
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
 
