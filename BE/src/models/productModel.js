@@ -30,11 +30,6 @@ const productSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
-    soldCount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
   },
   { timestamps: true }
 );
@@ -55,7 +50,6 @@ productSchema.index({ name: "text", description: "text" });
 // Create indexes for filtering and sorting
 productSchema.index({ price: 1 });
 productSchema.index({ viewCount: -1 });
-productSchema.index({ soldCount: -1 });
 productSchema.index({ createdAt: -1 });
 productSchema.index({ category: 1, status: 1 });
 

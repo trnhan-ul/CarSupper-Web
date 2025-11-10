@@ -136,8 +136,6 @@ const updateOrderStatusByAdmin = async (req, res) => {
       });
     }
 
-    const oldStatus = order.status;
-
     // Cập nhật trạng thái đơn hàng
     const updatedOrder = await Order.findByIdAndUpdate(
       orderId,
@@ -149,21 +147,10 @@ const updateOrderStatusByAdmin = async (req, res) => {
       return res.status(404).json({ message: "Order not found after update" });
     }
 
-    // Nếu status chuyển sang "done", tăng soldCount cho các products
-    if (status === "done" && oldStatus !== "done") {
-      for (const item of updatedOrder.items) {
-        await Product.findByIdAndUpdate(item.productId, {
-          $inc: { soldCount: 1 },
-        });
-      }
-    }
-
-    return res
-      .status(200)
-      .json({
-        message: "Order status updated successfully",
-        order: updatedOrder,
-      });
+    return res.status(200).json({
+      message: "Order status updated successfully",
+      order: updatedOrder,
+    });
   } catch (error) {
     console.error("Error updating order status:", error);
     return res.status(500).json({

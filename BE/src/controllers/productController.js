@@ -454,9 +454,6 @@ const advancedSearch = async (req, res) => {
       case "newest":
         sortOptions = { createdAt: -1 };
         break;
-      case "popular":
-        sortOptions = { soldCount: -1 };
-        break;
       case "most_viewed":
         sortOptions = { viewCount: -1 };
         break;
@@ -509,7 +506,7 @@ const advancedSearch = async (req, res) => {
   }
 };
 
-// Get trending products (based on viewCount and soldCount in recent time)
+// Get trending products (based on viewCount in recent time)
 const getTrendingProducts = async (req, res) => {
   try {
     const { limit, days } = req.query;
@@ -520,13 +517,13 @@ const getTrendingProducts = async (req, res) => {
     const dateThreshold = new Date();
     dateThreshold.setDate(dateThreshold.getDate() - daysAgo);
 
-    // Get trending products based on views and sales
+    // Get trending products based on views only
     const trendingProducts = await Product.find({
       status: "active",
       createdAt: { $gte: dateThreshold },
     })
       .populate("category", "name")
-      .sort({ viewCount: -1, soldCount: -1 })
+      .sort({ viewCount: -1 })
       .limit(productLimit)
       .lean();
 
@@ -544,7 +541,7 @@ const getTrendingProducts = async (req, res) => {
   }
 };
 
-// Get popular products (all time best sellers)
+// Get popular products (all time most viewed)
 const getPopularProducts = async (req, res) => {
   try {
     const { limit } = req.query;
@@ -552,7 +549,7 @@ const getPopularProducts = async (req, res) => {
 
     const popularProducts = await Product.find({ status: "active" })
       .populate("category", "name")
-      .sort({ soldCount: -1, viewCount: -1 })
+      .sort({ viewCount: -1 })
       .limit(productLimit)
       .lean();
 
