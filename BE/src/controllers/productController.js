@@ -5,23 +5,14 @@ const fs = require("fs");
 const mongoose = require('mongoose');
 const getAllProducts = async (req, res) => {
   try {
-    const { category, gender, minPrice, maxPrice, status, name, page, limit } =
+    const { category, minPrice, maxPrice, status, name, page, limit } =
       req.query;
 
     let filter = {};
 
-    if (category || gender) {
-      let categoryFilter = {};
-
-      if (category) {
-        categoryFilter.name = category;
-      }
-
-      if (gender) {
-        categoryFilter.gender = gender;
-      }
-
-      const matchedCategories = await Category.find(categoryFilter).select(
+    // Filter by category
+    if (category) {
+      const matchedCategories = await Category.find({ name: category }).select(
         "_id"
       );
       const categoryIds = matchedCategories.map((cat) => cat._id);
@@ -30,7 +21,7 @@ const getAllProducts = async (req, res) => {
         return res.status(200).json({
           success: true,
           data: [],
-          message: "No products found for this category or gender.",
+          message: "No products found for this category.",
           pagination: { totalProducts: 0, currentPage: 1, totalPages: 1 },
         });
       }
@@ -38,16 +29,19 @@ const getAllProducts = async (req, res) => {
       filter.category = { $in: categoryIds };
     }
 
+    // Filter by status
     if (status) {
       filter.status = status;
     }
 
+    // Filter by price range
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = parseInt(minPrice);
       if (maxPrice) filter.price.$lte = parseInt(maxPrice);
     }
 
+    // Filter by name (search)
     if (name) {
       filter.name = new RegExp(name, "i");
     }
@@ -61,7 +55,7 @@ const getAllProducts = async (req, res) => {
     const products = await Product.find(filter)
       .populate({
         path: "category",
-        select: "name gender status",
+        select: "name status",
       })
       .sort(sortOptions)
       .skip(skip)
@@ -73,7 +67,7 @@ const getAllProducts = async (req, res) => {
       return res.status(200).json({
         success: true,
         data: [],
-        message: "No products found for this category or gender.",
+        message: "No products found.",
         pagination: { totalProducts: 0, currentPage: 1, totalPages: 1 },
       });
     }
@@ -111,7 +105,8 @@ const getProductById = async (req, res) => {
   }
 };
 
-const createProduct = async (req, res) => { // Tên hàm đã được đổi đúng
+const createProduct = async (req, res) => {
+  // Tên hàm đã được đổi đúng
   console.log("--- DEBUG createProductController START ---");
   console.log("Raw req.body:", req.body); // <-- XEM KỸ LOG NÀY TRONG CONSOLE CỦA SERVER
   console.log("Raw req.files:", req.files);
@@ -124,23 +119,34 @@ const createProduct = async (req, res) => { // Tên hàm đã được đổi đ
     // --- ÉP KIỂU VÀ KIỂM TRA DỮ LIỆU ĐẦU VÀO CẨN THẬN ---
 
     // 1. Name
-    if (!name || typeof name !== 'string' || name.trim() === '') {
-      return res.status(400).json({ success: false, message: "Product name is required and cannot be empty." });
+    if (!name || typeof name !== "string" || name.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Product name is required and cannot be empty.",
+      });
     }
 
     // 2. Price
     const parsedPrice = parseFloat(price);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
-      return res.status(400).json({ success: false, message: "Price must be a positive number." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Price must be a positive number." });
     }
 
     // 3. Discount Price (Optional)
     const parsedDiscountPrice = discountPrice ? parseFloat(discountPrice) : 0;
     if (isNaN(parsedDiscountPrice) || parsedDiscountPrice < 0) {
-      return res.status(400).json({ success: false, message: "Discount price must be a non-negative number." });
+      return res.status(400).json({
+        success: false,
+        message: "Discount price must be a non-negative number.",
+      });
     }
     if (parsedDiscountPrice >= parsedPrice) {
-      return res.status(400).json({ success: false, message: "Discount price must be less than the regular price." });
+      return res.status(400).json({
+        success: false,
+        message: "Discount price must be less than the regular price.",
+      });
     }
 
     // 4. Category
@@ -148,13 +154,17 @@ const createProduct = async (req, res) => { // Tên hàm đã được đổi đ
     if (category && mongoose.Types.ObjectId.isValid(category)) {
       categoryObjectId = new mongoose.Types.ObjectId(category); // <-- Ép kiểu TƯỜNG MINH
     } else {
-      return res.status(400).json({ success: false, message: "Invalid category ID provided or category is missing." });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID provided or category is missing.",
+      });
     }
-
 
     // 6. Images
     if (!images || images.length === 0) {
-      return res.status(400).json({ success: false, message: "Please upload at least one image!" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Please upload at least one image!" });
     }
 
     // Kiểm tra trùng tên sản phẩm
@@ -186,11 +196,18 @@ const createProduct = async (req, res) => { // Tên hàm đã được đổi đ
     });
   } catch (error) {
     console.error("Create Product Error:", error); // Log lỗi chi tiết
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(val => val.message);
-      return res.status(400).json({ success: false, message: `Product validation failed: ${messages.join(', ')}` });
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((val) => val.message);
+      return res.status(400).json({
+        success: false,
+        message: `Product validation failed: ${messages.join(", ")}`,
+      });
     }
-    res.status(500).json({ success: false, message: "Internal server error during product creation", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during product creation",
+      error: error.message,
+    });
   } finally {
     console.log("--- DEBUG createProductController END ---");
   }
@@ -231,39 +248,43 @@ const updateStatusProduct = async (req, res) => {
   }
 };
 const updateProduct = async (req, res) => {
-
   try {
-    const {
-      name,
-      price,
-      description,
-      discountPrice,
-      category,
-      removeImages,
-    } = req.body;
+    const { name, price, description, discountPrice, category, removeImages } =
+      req.body;
 
     const productId = req.params.id;
     const images = req.files;
 
     // --- ÉP KIỂU VÀ KIỂM TRA DỮ LIỆU ĐẦU VÀO CẨN THẬN (TƯƠNG TỰ CREATE) ---
     // 1. Name
-    if (!name || typeof name !== 'string' || name.trim() === '') {
-      return res.status(400).json({ success: false, message: "Product name is required and cannot be empty." });
+    if (!name || typeof name !== "string" || name.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Product name is required and cannot be empty.",
+      });
     }
 
     // 2. Price
     const parsedPrice = parseFloat(price);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
-      return res.status(400).json({ success: false, message: "Price must be a positive number." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Price must be a positive number." });
     }
 
     // 3. Discount Price (Optional)
     const parsedDiscountPrice = discountPrice ? parseFloat(discountPrice) : 0;
     if (isNaN(parsedDiscountPrice) || parsedDiscountPrice < 0) {
-      return res.status(400).json({ success: false, message: "Discount price must be a non-negative number." });
+      return res.status(400).json({
+        success: false,
+        message: "Discount price must be a non-negative number.",
+      });
     }
     if (parsedDiscountPrice >= parsedPrice) {
-      return res.status(400).json({ success: false, message: "Discount price must be less than the regular price." });
+      return res.status(400).json({
+        success: false,
+        message: "Discount price must be less than the regular price.",
+      });
     }
 
     // 4. Category
@@ -271,14 +292,19 @@ const updateProduct = async (req, res) => {
     if (category && mongoose.Types.ObjectId.isValid(category)) {
       categoryObjectId = new mongoose.Types.ObjectId(category);
     } else {
-      return res.status(400).json({ success: false, message: "Invalid category ID provided or category is missing." });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID provided or category is missing.",
+      });
     }
 
     // 5. Variants removed in car shop flow
 
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found!" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found!" });
     }
 
     // Xử lý removeImages
@@ -287,7 +313,9 @@ const updateProduct = async (req, res) => {
       try {
         imagesToRemove = JSON.parse(removeImages);
       } catch (error) {
-        return res.status(400).json({ success: false, message: "Invalid removeImages format" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid removeImages format" });
       }
       if (Array.isArray(imagesToRemove)) {
         for (const imagePath of imagesToRemove) {
@@ -320,11 +348,16 @@ const updateProduct = async (req, res) => {
       ];
     }
     // Kiểm tra nếu không còn ảnh nào
-    if (product.images.length === 0 && (images && images.length === 0) && (!removeImages || JSON.parse(removeImages).length === product.images.length)) {
+    if (
+      product.images.length === 0 &&
+      images &&
+      images.length === 0 &&
+      (!removeImages ||
+        JSON.parse(removeImages).length === product.images.length)
+    ) {
       // Tùy chọn: Nếu product schema của bạn yêu cầu ít nhất 1 ảnh, bạn cần validate ở đây.
       // Ví dụ: return res.status(400).json({ success: false, message: "Product must have at least one image." });
     }
-
 
     product.name = name.trim();
     product.price = parsedPrice;
@@ -342,15 +375,23 @@ const updateProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Update Product Error:", error);
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(val => val.message);
-      return res.status(400).json({ success: false, message: `Product validation failed: ${messages.join(', ')}` });
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((val) => val.message);
+      return res.status(400).json({
+        success: false,
+        message: `Product validation failed: ${messages.join(", ")}`,
+      });
     }
-    res.status(500).json({ success: false, message: "Internal server error during product update", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during product update",
+      error: error.message,
+    });
   } finally {
     console.log("--- DEBUG updateProductController END ---");
   }
 };
+
 module.exports = {
   getAllProducts,
   getProductById,
