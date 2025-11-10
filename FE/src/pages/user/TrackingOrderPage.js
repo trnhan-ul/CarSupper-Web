@@ -208,12 +208,6 @@ const TrackingOrderPage = () => {
                         />
                         <div>
                           <strong>{product?.name}</strong>
-                          <br />
-                          <small>Color: {variant?.color}</small>
-                          <br />
-                          <small>Size: {variant?.size}</small>
-                          <br />
-                          <small>Quantity: {variant?.quantity}</small>
                         </div>
                       </div>
                     );

@@ -56,14 +56,41 @@ const getUserById = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { userId } = req.params;
-  const updateData = { ...req.body };
+  const { fullName, phone, gender, address } = req.body;
+
   try {
-    if (!updateData.fullName || updateData.fullName.trim() === "") {
+    // Validate fullName
+    if (!fullName || fullName.trim() === "") {
       return res.status(400).json({
         success: false,
         message: "Full name cannot be empty",
       });
     }
+
+    // Validate phone format (10-11 digits)
+    if (phone && !/^[0-9]{10,11}$/.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number must be 10-11 digits",
+      });
+    }
+
+    // Validate gender enum
+    if (gender && !["male", "female", "other"].includes(gender.toLowerCase())) {
+      return res.status(400).json({
+        success: false,
+        message: "Gender must be 'male', 'female', or 'other'",
+      });
+    }
+
+    // Prepare update data - chỉ cho phép update các fields được phép
+    const updateData = {};
+    if (fullName) updateData.fullName = fullName.trim();
+    if (phone) updateData.phone = phone;
+    if (gender) updateData.gender = gender.toLowerCase();
+    if (address !== undefined) updateData.address = address.trim();
+
+    // Handle avatar upload
     if (req.file) {
       const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
       if (!allowedTypes.includes(req.file.mimetype)) {
@@ -73,10 +100,11 @@ const updateUser = async (req, res) => {
             "Invalid file type. Only .jpeg, .jpg, .png files are allowed",
         });
       }
+
+      // Delete old avatar if exists
       const user = await User.findById(userId);
       if (user && user.avatar) {
         const oldAvatarFilename = user.avatar.split("/")[1];
-
         const oldAvatarPath = path.join(
           __dirname,
           "..",
@@ -91,6 +119,7 @@ const updateUser = async (req, res) => {
       }
       updateData.avatar = `avatars/${req.file.filename}`;
     }
+
     const user = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
       runValidators: true,
@@ -102,6 +131,7 @@ const updateUser = async (req, res) => {
         message: "User not found",
       });
     }
+
     res.status(200).json({
       success: true,
       message: "User updated successfully",
@@ -174,34 +204,68 @@ const updateStatusUser = async (req, res) => {
 
 const changePassword = async (req, res) => {
   try {
-    const { oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
     const { userId } = req.params;
+
+    // Validate required fields
     if (!oldPassword || !newPassword) {
       return res.status(400).json({
         success: false,
-        message: "Both old and new passwords are required",
+        message: "Old password and new password are required",
+      });
+    }
+
+    // Validate confirm password if provided
+    if (confirmPassword && newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    // Validate new password length
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 6 characters long",
+      });
+    }
+
+    // Check if new password is same as old password
+    if (oldPassword === newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from old password",
       });
     }
 
     const user = await User.findById(userId);
-    if (!user)
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
+    // Verify old password
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch)
-      return res
-        .status(400)
-        .json({ success: false, message: "Incorrect old password" });
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Incorrect old password",
+      });
+    }
 
+    // Hash and save new password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
 
     await user.save();
-    res
-      .status(200)
-      .json({ success: true, message: "Password updated successfully" });
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
   } catch (error) {
     res.status(500).json({
       success: false,

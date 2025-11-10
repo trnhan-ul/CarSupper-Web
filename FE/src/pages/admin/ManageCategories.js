@@ -19,7 +19,6 @@ const CategoryManagement = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [currentCategory, setCurrentCategory] = useState({
     name: "",
-    gender: "",
   });
   const [currentStatus, setCurrentStatus] = useState("active");
   const [categoryId, setCategoryId] = useState(null);
@@ -36,7 +35,7 @@ const CategoryManagement = () => {
       return;
     }
     fetchAllCategories();
-  }, [navigate, /* eslint-disable-line react-hooks/exhaustive-deps */]);
+  }, [navigate /* eslint-disable-line react-hooks/exhaustive-deps */]);
 
   const fetchAllCategories = useCallback(async () => {
     setLoading(true);
@@ -83,18 +82,17 @@ const CategoryManagement = () => {
       setCategoryId(category._id);
       setCurrentCategory({
         name: category.name,
-        gender: category.gender,
       });
     } else {
       setIsEdit(false);
-      setCurrentCategory({ name: "", gender: "" });
+      setCurrentCategory({ name: "" });
     }
     setShowEditModal(true);
   };
 
   const handleCloseEditModal = () => {
     setShowEditModal(false);
-    setCurrentCategory({ name: "", gender: "" });
+    setCurrentCategory({ name: "" });
     setCategoryId(null);
   };
 
@@ -115,10 +113,7 @@ const CategoryManagement = () => {
     setLoading(true);
     try {
       if (isEdit) {
-        const updatedCategory = await editCategory(
-          categoryId,
-          currentCategory
-        );
+        const updatedCategory = await editCategory(categoryId, currentCategory);
         setCategories(
           categories.map((cat) =>
             cat._id === categoryId ? updatedCategory : cat
@@ -152,14 +147,18 @@ const CategoryManagement = () => {
         currentStatus
       );
       setCategories(
-        categories.map((cat) => (cat._id === categoryId ? updatedCategory : cat))
+        categories.map((cat) =>
+          cat._id === categoryId ? updatedCategory : cat
+        )
       );
       setFilteredCategories(
         filteredCategories.map((cat) =>
           cat._id === categoryId ? updatedCategory : cat
         )
       );
-      toast.success(`Category status updated to ${currentStatus} successfully!`);
+      toast.success(
+        `Category status updated to ${currentStatus} successfully!`
+      );
       handleCloseStatusModal();
     } catch (error) {
       toast.error(error.message);
@@ -209,7 +208,6 @@ const CategoryManagement = () => {
           <thead>
             <tr>
               <th>Name</th>
-              <th style={{ width: 400 }}>Gender</th>
               <th style={{ width: 400 }}>Status</th>
               <th>Actions</th>
             </tr>
@@ -218,7 +216,6 @@ const CategoryManagement = () => {
             {filteredCategories.map((category) => (
               <tr key={category._id}>
                 <td>{category.name}</td>
-                <td>{category.gender}</td>
                 <td>
                   <span
                     style={{
@@ -278,24 +275,6 @@ const CategoryManagement = () => {
                 required
                 disabled={loading}
               />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Gender</Form.Label>
-              <Form.Select
-                value={currentCategory.gender}
-                onChange={(e) =>
-                  setCurrentCategory({
-                    ...currentCategory,
-                    gender: e.target.value,
-                  })
-                }
-                required
-                disabled={loading}
-              >
-                <option value="">Select Gender</option>
-                <option value="Men">Men</option>
-                <option value="Women">Women</option>
-              </Form.Select>
             </Form.Group>
             <Button type="submit" variant="primary" disabled={loading}>
               {isEdit ? "Update" : "Create"}

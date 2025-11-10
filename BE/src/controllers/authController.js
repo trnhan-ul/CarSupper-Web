@@ -26,22 +26,43 @@ const register = async (req, res) => {
         const { fullName, email, password, address, phone, avatar, gender } =
             req.body;
 
+        // Validate required fields
         if (!fullName || !email || !password) {
             return res.status(400).json({
                 success: false,
                 message: "Full name, email, and password are required",
             });
         }
+
+        // Validate email format
+        if (!validateEmail(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email address",
+            });
+        }
+
+        // Validate password length
         if (password.length < 6) {
             return res.status(400).json({
                 success: false,
                 message: "Password must be at least 6 characters long",
             });
         }
-        if (!validateEmail(email)) {
+
+        // Validate phone format if provided
+        if (phone && !/^[0-9]{10,11}$/.test(phone)) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid email address",
+                message: "Phone number must be 10-11 digits",
+            });
+        }
+
+        // Validate gender if provided
+        if (gender && !["male", "female", "other"].includes(gender.toLowerCase())) {
+            return res.status(400).json({
+                success: false,
+                message: "Gender must be 'male', 'female', or 'other'",
             });
         }
 
@@ -70,7 +91,7 @@ const register = async (req, res) => {
                         address,
                         phone,
                         avatar,
-                        gender,
+                        gender: gender ? gender.toLowerCase() : null,
                     },
                 },
                 { new: true }
@@ -86,7 +107,7 @@ const register = async (req, res) => {
                     address,
                     phone,
                     avatar,
-                    gender,
+                    gender: gender ? gender.toLowerCase() : null,
                 },
             });
         }
@@ -170,6 +191,22 @@ const verifyOTPRegister = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        // Validate required fields
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required",
+            });
+        }
+
+        // Validate email format
+        if (!validateEmail(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email address",
+            });
+        }
 
         const user = await User.findOne({ email });
         if (!user) {

@@ -2,16 +2,15 @@ const Category = require("../models/categoryModel");
 
 const createCategory = async (req, res) => {
   try {
-    const { name, gender } = req.body;
-    if (!name || !gender) {
+    const { name } = req.body;
+    if (!name) {
       return res.status(400).json({
         success: false,
-        message: "Name and gender are required",
+        message: "Name is required",
       });
     }
     const category = new Category({
       name,
-      gender,
     });
     await category.save();
     res.status(201).json({
@@ -42,6 +41,28 @@ const getAllCategories = async (req, res) => {
       success: true,
       data: categories,
       message: "Get categories successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getCategoryById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findById(id);
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: category,
+      message: "Get category successfully",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -120,9 +141,38 @@ const updateCategoryStatus = async (req, res) => {
   }
 };
 
+const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const category = await Category.findByIdAndDelete(id);
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Category deleted successfully",
+      data: category,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   updateCategory,
   updateCategoryStatus,
   createCategory,
   getAllCategories,
+  getCategoryById,
+  deleteCategory,
 };
