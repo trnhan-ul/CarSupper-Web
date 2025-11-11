@@ -20,6 +20,14 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     images: [{ type: String }],
+    variants: [
+      {
+        color: { type: String, required: true },
+        transmission: { type: String, required: true },
+        engine: { type: String, required: true },
+        stock: { type: Number, required: true, min: 0, default: 0 },
+      },
+    ],
     status: {
       type: String,
       enum: ["active", "inactive"],

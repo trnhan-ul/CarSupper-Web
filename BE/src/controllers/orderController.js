@@ -318,6 +318,71 @@ const getOrderById = async (req, res) => {
   }
 };
 
+const getAllFeedbacks = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, rating, sortBy = "createdAt" } = req.query;
+
+    // Query để lấy orders có feedback
+    const query = {
+      feedback: { $ne: "" }, // Chỉ lấy orders có feedback (không rỗng)
+      status: "done", // Chỉ lấy orders đã hoàn thành
+    };
+
+    // Tính skip cho pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Lấy orders có feedback
+    const orders = await Order.find(query)
+      .populate("userId", "fullName email phone avatar")
+      .populate("items.productId", "name price discountPrice images")
+      .sort({ [sortBy]: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .lean();
+
+    // Đếm tổng số orders có feedback
+    const totalFeedbacks = await Order.countDocuments(query);
+
+    // Format response để dễ đọc
+    const feedbacks = orders.map((order) => ({
+      orderId: order._id,
+      feedback: order.feedback,
+      customer: {
+        id: order.userId._id,
+        fullName: order.userId.fullName,
+        email: order.userId.email,
+        phone: order.userId.phone,
+        avatar: order.userId.avatar,
+      },
+      orderDetails: {
+        items: order.items,
+        totalAmount: order.totalAmount,
+        status: order.status,
+      },
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+    }));
+
+    res.json({
+      success: true,
+      data: feedbacks,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalFeedbacks / parseInt(limit)),
+        totalItems: totalFeedbacks,
+        itemsPerPage: parseInt(limit),
+      },
+    });
+  } catch (error) {
+    console.error("Error getting feedbacks:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error getting feedbacks",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   updateOrderStatusByAdmin,
   addOrderFeedback,
@@ -327,4 +392,5 @@ module.exports = {
   softDeleteOrder,
   cancelOrderByUser,
   getOrderById,
+  getAllFeedbacks,
 };

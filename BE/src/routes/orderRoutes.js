@@ -12,12 +12,14 @@ const {
   getAllOrders,
   softDeleteOrder,
   getOrderById,
+  getAllFeedbacks,
 } = require("../controllers/orderController");
 
 const router = express.Router();
 
 // Admin
 router.get("/all", verifyToken, adminMiddleware, getAllOrders);
+router.get("/feedbacks/all", verifyToken, adminMiddleware, getAllFeedbacks);
 router.patch("/status", verifyToken, adminMiddleware, updateOrderStatusByAdmin);
 router.delete("/:id", verifyToken, adminMiddleware, softDeleteOrder);
 
