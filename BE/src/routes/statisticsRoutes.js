@@ -3,10 +3,6 @@ const router = express.Router();
 const {
   getSummary,
   getOrderStatus,
-  getRevenueAnalytics,
-  getCustomerInsights,
-  getCategoryPerformance,
-  getOrderTrends,
   getDashboardOverview,
 } = require("../controllers/statisticsController");
 const {
@@ -14,17 +10,13 @@ const {
   adminMiddleware,
 } = require("../middleware/authMiddleware");
 
-// Dashboard overview (comprehensive stats)
+// Dashboard overview (comprehensive stats with growth metrics)
 router.get("/dashboard", verifyToken, adminMiddleware, getDashboardOverview);
 
-// Basic statistics
+// Summary statistics (total counts and revenue)
 router.get("/summary", verifyToken, adminMiddleware, getSummary);
-router.get("/order-status", verifyToken, adminMiddleware, getOrderStatus);
 
-// Advanced analytics
-router.get("/revenue", verifyToken, adminMiddleware, getRevenueAnalytics);
-router.get("/customers", verifyToken, adminMiddleware, getCustomerInsights);
-router.get("/categories", verifyToken, adminMiddleware, getCategoryPerformance);
-router.get("/order-trends", verifyToken, adminMiddleware, getOrderTrends);
+// Order status distribution
+router.get("/order-status", verifyToken, adminMiddleware, getOrderStatus);
 
 module.exports = router;
