@@ -25,11 +25,6 @@ const productSchema = new mongoose.Schema(
       enum: ["active", "inactive"],
       default: "active",
     },
-    viewCount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
   },
   { timestamps: true }
 );
@@ -43,14 +38,5 @@ productSchema.post("save", function (error, doc, next) {
     next(error);
   }
 });
-
-// Create text index for search
-productSchema.index({ name: "text", description: "text" });
-
-// Create indexes for filtering and sorting
-productSchema.index({ price: 1 });
-productSchema.index({ viewCount: -1 });
-productSchema.index({ createdAt: -1 });
-productSchema.index({ category: 1, status: 1 });
 
 module.exports = mongoose.model("Product", productSchema);

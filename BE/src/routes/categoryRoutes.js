@@ -14,7 +14,6 @@ const {
 
 const router = express.Router();
 
-router.get("/all", getAllCategories);
 router.get("/", getAllCategories);
 router.get("/:id", getCategoryById);
 router.post("/", verifyToken, adminMiddleware, createCategory);

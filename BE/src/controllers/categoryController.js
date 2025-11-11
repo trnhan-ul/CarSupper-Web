@@ -1,4 +1,5 @@
 const Category = require("../models/categoryModel");
+const Product = require("../models/productModel");
 
 const createCategory = async (req, res) => {
   try {
@@ -27,15 +28,37 @@ const getAllCategories = async (req, res) => {
   try {
     const { status } = req.query;
 
-    let query = {};
+    let matchFilter = {};
 
     if (status === "active") {
-      query.status = "active";
+      matchFilter.status = "active";
     } else if (status === "inactive") {
-      query.status = "inactive";
+      matchFilter.status = "inactive";
     }
 
-    const categories = await Category.find(query).sort({ status: -1 });
+    // Use aggregation to get product count for each category
+    const categories = await Category.aggregate([
+      { $match: matchFilter },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "category",
+          as: "products",
+        },
+      },
+      {
+        $addFields: {
+          productCount: { $size: "$products" },
+        },
+      },
+      {
+        $project: {
+          products: 0, // Remove products array from response
+        },
+      },
+      { $sort: { status: -1, createdAt: -1 } },
+    ]);
 
     res.json({
       success: true,
@@ -145,14 +168,29 @@ const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const category = await Category.findByIdAndDelete(id);
-
+    // Check if category exists
+    const category = await Category.findById(id);
     if (!category) {
       return res.status(404).json({
         success: false,
         message: "Category not found",
       });
     }
+
+    // Check if category has products
+    const productCount = await Product.countDocuments({ category: id });
+    if (productCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot delete category. ${productCount} product${
+          productCount > 1 ? "s are" : " is"
+        } using this category.`,
+        productCount,
+      });
+    }
+
+    // Delete category if no products are using it
+    await Category.findByIdAndDelete(id);
 
     res.json({
       success: true,
