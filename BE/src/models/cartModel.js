@@ -17,8 +17,9 @@ const cartSchema = new mongoose.Schema(
         },
         variants: [
           {
-            size: { type: String, required: true },
             color: { type: String, required: true },
+            transmission: { type: String, required: true },
+            engine: { type: String, required: true },
             quantity: { type: Number, required: true, min: 1, default: 1 },
           },
         ],
