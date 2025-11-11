@@ -601,9 +601,59 @@
       "post": {
         "tags": ["Auth"],
         "summary": "Forgot password",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com",
+                    "description": "Email address of the account"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "OTP sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "OTP sent. Please check your email."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -618,14 +668,65 @@
     "/auth/verify-otp-reset": {
       "post": {
         "tags": ["Auth"],
-        "summary": "Verify OTP (reset)",
+        "summary": "Verify OTP and reset password",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "otp", "newPassword"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com",
+                    "description": "Email address of the account"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "123456",
+                    "description": "6-digit OTP code received via email"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "NewPassword123!",
+                    "description": "New password for the account"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Password reset successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductListResponse"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password has been reset successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired OTP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -690,7 +791,8 @@
       },
       "put": {
         "tags": ["Users"],
-        "summary": "Update user profile (multipart)",
+        "summary": "Update user profile",
+        "description": "Update user information including profile picture. Only the user themselves or admin can update.",
         "security": [
           {
             "bearerAuth": []
@@ -703,7 +805,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "User ID to update"
           }
         ],
         "requestBody": {
@@ -711,18 +814,77 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "required": ["fullName"],
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "example": "John Doe",
+                    "description": "Full name of the user (required)"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "0912345678",
+                    "description": "Phone number (10-11 digits)"
+                  },
+                  "gender": {
+                    "type": "string",
+                    "enum": ["male", "female", "other"],
+                    "example": "male",
+                    "description": "Gender of the user"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "123 Main St, Ho Chi Minh City",
+                    "description": "Address of the user"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Profile picture file (JPEG, JPG, PNG only)"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "User updated successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -777,6 +939,7 @@
       "put": {
         "tags": ["Users"],
         "summary": "Change password",
+        "description": "Change user password. Requires old password verification. Only the user themselves or admin can change.",
         "security": [
           {
             "bearerAuth": []
@@ -789,7 +952,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "User ID to change password for"
           }
         ],
         "requestBody": {
@@ -797,18 +961,79 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "required": ["oldPassword", "newPassword"],
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "OldPassword123!",
+                    "description": "Current password (required for verification)"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "NewPassword123!",
+                    "description": "New password (required, min 6 characters)"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "NewPassword123!",
+                    "description": "Confirm new password (optional, must match newPassword if provided)"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Password changed successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryListResponse"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password changed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error or wrong old password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -835,7 +1060,8 @@
       },
       "post": {
         "tags": ["Products"],
-        "summary": "Create product (admin, multipart)",
+        "summary": "Create product (admin)",
+        "description": "Create a new product with images. Admin only.",
         "security": [
           {
             "bearerAuth": []
@@ -846,18 +1072,84 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "required": ["name", "price", "category", "images"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Tesla Model S Plaid 2024",
+                    "description": "Product name (required)"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "High-performance electric sedan with 1,020 hp",
+                    "description": "Product description"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 135000,
+                    "description": "Product price (required, positive number)"
+                  },
+                  "discountPrice": {
+                    "type": "number",
+                    "example": 125000,
+                    "description": "Discounted price (optional, must be less than price)"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "674f123abc456def789ghijk",
+                    "description": "Category ID (required, valid MongoDB ObjectId)"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Product images (required, at least 1 image)"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Created",
+            "description": "Product created successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProductDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin only",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -894,7 +1186,8 @@
       },
       "put": {
         "tags": ["Products"],
-        "summary": "Update product (admin, multipart)",
+        "summary": "Update product (admin)",
+        "description": "Update an existing product. Can update images, remove old images. Admin only.",
         "security": [
           {
             "bearerAuth": []
@@ -907,7 +1200,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Product ID to update"
           }
         ],
         "requestBody": {
@@ -915,18 +1209,99 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "required": ["name", "price", "category"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Tesla Model S Plaid 2024 (Updated)",
+                    "description": "Product name (required)"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Updated description for the product",
+                    "description": "Product description"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 135000,
+                    "description": "Product price (required, positive number)"
+                  },
+                  "discountPrice": {
+                    "type": "number",
+                    "example": 125000,
+                    "description": "Discounted price (optional, must be less than price)"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "674f123abc456def789ghijk",
+                    "description": "Category ID (required, valid MongoDB ObjectId)"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "New product images to add (optional)"
+                  },
+                  "removeImages": {
+                    "type": "string",
+                    "example": "[\"products/image1.jpg\", \"products/image2.jpg\"]",
+                    "description": "JSON array of image paths to remove (optional)"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Product updated successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProductDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin only",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
